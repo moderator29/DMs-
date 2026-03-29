@@ -1,0 +1,13 @@
+{
+  "name": "naka-go",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd naka-go-app && npm install && npm run build",
+    "dev": "cd naka-go-app && npm run dev",
+    "start": "cd naka-go-app && npm start"
+  },
+  "dependencies": {
+    "next": "^16.2.1"
+  }
+}
