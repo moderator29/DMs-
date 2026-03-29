@@ -74,23 +74,26 @@ export default function M4ngaPage() {
     return ethers;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getEip1193 = () => window.ethereum as any;
+
   const getProvider = async () => {
     const { BrowserProvider } = await getEthers();
     if (!window.ethereum) throw new Error('MetaMask not installed. Please install MetaMask to continue.');
-    return new BrowserProvider(window.ethereum as Parameters<typeof BrowserProvider>[0]);
+    return new BrowserProvider(getEip1193());
   };
 
   // ── Network check ───────────────────────────────────────────────────────────
   const checkNetwork = async (): Promise<boolean> => {
     if (!window.ethereum) return false;
-    const chainId = await (window.ethereum as { request: (args: { method: string }) => Promise<string> }).request({ method: 'eth_chainId' });
+    const chainId = await getEip1193().request({ method: 'eth_chainId' }) as string;
     return chainId === MAINNET_ID;
   };
 
   const switchToMainnet = async () => {
     if (!window.ethereum) return;
     try {
-      await (window.ethereum as { request: (args: { method: string; params: { chainId: string }[] }) => Promise<void> }).request({
+      await getEip1193().request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: MAINNET_ID }],
       });
@@ -193,10 +196,8 @@ export default function M4ngaPage() {
   // ── Listen for account/chain changes ─────────────────────────────────────────
   useEffect(() => {
     if (!window.ethereum) return;
-    const eth = window.ethereum as {
-      on: (event: string, cb: (arg: string[]) => void) => void;
-      removeListener: (event: string, cb: (arg: string[]) => void) => void;
-    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const eth = getEip1193() as any;
 
     const handleAccountsChanged = (accounts: string[]) => {
       if (!accounts.length) {
@@ -285,7 +286,7 @@ export default function M4ngaPage() {
       // Refresh eligibility after success
       await checkEligibility(wallet.address);
     } catch (e: unknown) {
-      const err = e as { code?: number; reason?: string; message?: string };
+      const err = e as { code?: number | string; reason?: string; message?: string };
       setMintStep('error');
       if (err.code === 4001 || err.code === 'ACTION_REJECTED') {
         setErrorMsg('Transaction rejected. Please confirm in MetaMask.');

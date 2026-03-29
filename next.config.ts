@@ -7,15 +7,8 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'ibb.co' },
     ],
   },
-  webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      net: false,
-      tls: false,
-    };
-    return config;
-  },
+  // Turbopack config (Next.js 16 default bundler)
+  turbopack: {},
 };
 
 export default nextConfig;
