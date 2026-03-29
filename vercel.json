@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd naka-go-app && npm install && npm run build",
+  "outputDirectory": "naka-go-app/.next",
+  "installCommand": "cd naka-go-app && npm install",
+  "devCommand": "cd naka-go-app && npm run dev",
+  "framework": "nextjs"
+}
