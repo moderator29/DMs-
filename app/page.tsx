@@ -5,15 +5,21 @@ import Timeline from '@/components/home/Timeline';
 import StatsBlock from '@/components/home/StatsBlock';
 import Tokenomics from '@/components/home/Tokenomics';
 import Community from '@/components/home/Community';
+import HomeChart from '@/components/home/HomeChart';
+import HomeDdergo from '@/components/home/HomeDdergo';
+import HomeStickerStrip from '@/components/home/HomeStickerStrip';
 
 export default function HomePage() {
   return (
-    <main>
+    <main className="bg-[#0a0a0a]">
       <Header />
       <Hero />
-      <Timeline />
+      <HomeStickerStrip />
       <StatsBlock />
+      <Timeline />
+      <HomeChart />
       <Tokenomics />
+      <HomeDdergo />
       <Community />
       <Footer />
     </main>
