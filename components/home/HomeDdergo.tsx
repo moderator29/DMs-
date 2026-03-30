@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { Music2, Flame, Moon, Headphones } from 'lucide-react';
 import { SPOTIFY_EMBED } from '@/lib/utils/constants';
 
 const SpotifyIcon = () => (
@@ -13,8 +14,14 @@ const SpotifyIcon = () => (
 
 const BAR_COUNT = 20;
 
+// Pre-computed static values — no Math.random() during render (ESLint purity)
+const BAR_H1 = [55, 30, 75, 45, 90, 35, 65, 50, 80, 40, 70, 38, 60, 48, 85, 42, 72, 32, 68, 58];
+const BAR_H2 = [80, 50, 95, 60, 70, 55, 85, 65, 55, 70, 45, 75, 40, 90, 60, 65, 50, 80, 45, 75];
+const BAR_H3 = [40, 20, 55, 35, 65, 25, 45, 38, 60, 30, 55, 28, 48, 35, 62, 32, 52, 22, 50, 42];
+const BAR_DUR = [0.5, 0.7, 0.45, 0.6, 0.55, 0.75, 0.5, 0.65, 0.48, 0.7, 0.52, 0.68, 0.53, 0.62, 0.47, 0.72, 0.58, 0.44, 0.66, 0.56];
+
 export default function HomeDdergo() {
-  const [playing, setPlaying] = useState(false);
+  const [playing] = useState(false);
 
   return (
     <section className="py-20 bg-[#0a0a0a] relative overflow-hidden">
@@ -108,15 +115,23 @@ export default function HomeDdergo() {
                   key={i}
                   className="flex-1 rounded-t"
                   style={{ background: '#1DB954', minWidth: 3 }}
-                  animate={{ height: [`${20 + Math.random() * 60}%`, `${20 + Math.random() * 80}%`, `${20 + Math.random() * 40}%`] }}
-                  transition={{ duration: 0.5 + Math.random() * 0.5, repeat: Infinity, delay: i * 0.04, repeatType: 'reverse' }}
+                  animate={{ height: [`${20 + BAR_H1[i]}%`, `${20 + BAR_H2[i]}%`, `${20 + BAR_H3[i]}%`] }}
+                  transition={{ duration: BAR_DUR[i], repeat: Infinity, delay: i * 0.04, repeatType: 'reverse' }}
                 />
               ))}
             </div>
 
             <div className="space-y-2">
-              {['🎵 Curated by the cult', '🐕 Shiba-approved vibes', '🔥 Updated regularly', '🌕 For moon nights'].map((item) => (
-                <div key={item} className="text-white/50 text-xs flex items-center gap-2">{item}</div>
+              {[
+                { Icon: Music2, text: 'Curated by the cult' },
+                { Icon: Headphones, text: 'Cult-approved vibes' },
+                { Icon: Flame, text: 'Updated regularly' },
+                { Icon: Moon, text: 'For moon nights' },
+              ].map(({ Icon, text }) => (
+                <div key={text} className="text-white/50 text-xs flex items-center gap-2">
+                  <Icon className="w-3.5 h-3.5 text-[#1DB954] flex-shrink-0" />
+                  {text}
+                </div>
               ))}
             </div>
 

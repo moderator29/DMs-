@@ -8,12 +8,14 @@ import Community from '@/components/home/Community';
 import HomeChart from '@/components/home/HomeChart';
 import HomeDdergo from '@/components/home/HomeDdergo';
 import HomeStickerStrip from '@/components/home/HomeStickerStrip';
+import HomeCTABar from '@/components/home/HomeCTABar';
 
 export default function HomePage() {
   return (
     <main className="bg-[#0a0a0a]">
       <Header />
       <Hero />
+      <HomeCTABar />
       <HomeStickerStrip />
       <StatsBlock />
       <Timeline />

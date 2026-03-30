@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, Dna, Calendar, Coins } from 'lucide-react';
 import { NAKA_TOKEN_ADDRESS } from '@/lib/utils/constants';
 
 const API = `https://api.dexscreener.com/latest/dex/tokens/${NAKA_TOKEN_ADDRESS}`;
@@ -177,9 +177,9 @@ export default function StatsBlock() {
         {/* Lore stats row */}
         <div className="mt-6 grid grid-cols-3 gap-3">
           {[
-            { emoji: '🧬', value: '80%+', label: 'Modern Shibas' },
-            { emoji: '📅', value: '1948', label: 'Birth Year' },
-            { emoji: '🐕', value: '1B', label: 'Total Supply' },
+            { Icon: Dna, value: '80%+', label: 'Modern Shibas' },
+            { Icon: Calendar, value: '1948', label: 'Birth Year' },
+            { Icon: Coins, value: '1B', label: 'Total Supply' },
           ].map((item, i) => (
             <motion.div
               key={item.label}
@@ -194,7 +194,9 @@ export default function StatsBlock() {
                 border: '1px solid rgba(255,77,0,0.18)',
               }}
             >
-              <div className="text-2xl mb-1">{item.emoji}</div>
+              <div className="flex justify-center mb-2">
+                <item.Icon className="w-6 h-6 text-[#FF4D00]" />
+              </div>
               <div
                 className="text-2xl font-black"
                 style={{

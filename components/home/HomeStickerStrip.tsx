@@ -9,7 +9,7 @@ import {
 } from '@/components/shared/AnimatedStickers';
 
 const row1 = [
-  { C: NakaGoIPSticker,    size: 170, label: 'NAKA GO IP!',     delay: 0    },
+  { C: NakaGoIPSticker,    size: 170, label: 'NAKA GO UP!',     delay: 0    },
   { C: MoonSticker,        size: 155, label: 'NAKA MOON',       delay: 0.07 },
   { C: HodlSticker,        size: 150, label: 'HODL',            delay: 0.14 },
   { C: GmFrensSticker,     size: 150, label: 'GM FRENS',        delay: 0.21 },
