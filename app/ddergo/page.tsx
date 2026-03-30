@@ -2,7 +2,13 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Music, Send, ExternalLink } from 'lucide-react';
+import { Music, Send, ExternalLink, Dna, Moon, Sunrise, Circle, Award, Flag, Music2, Flame } from 'lucide-react';
+
+// Pre-computed static values — no Math.random() during render
+const VIZ_H1 = [15, 35, 22, 48, 12, 42, 28, 55, 18, 38, 25, 50, 14, 44, 30, 52, 20, 46, 32, 58];
+const VIZ_H2 = [45, 60, 52, 70, 38, 65, 50, 75, 42, 62, 55, 72, 40, 68, 48, 78, 44, 66, 56, 80];
+const VIZ_H3 = [25, 40, 32, 50, 20, 45, 35, 55, 28, 42, 38, 52, 22, 48, 36, 58, 30, 44, 40, 62];
+const VIZ_DUR = [0.8, 0.95, 0.85, 1.0, 0.88, 0.92, 0.82, 1.05, 0.9, 0.98, 0.86, 1.02, 0.84, 0.96, 0.88, 1.08, 0.94, 0.9, 0.87, 1.1];
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ParticleField from '@/components/shared/ParticleField';
@@ -11,15 +17,15 @@ import { SPOTIFY_EMBED } from '@/lib/utils/constants';
 const PLAYLIST_URL = 'https://open.spotify.com/playlist/3PGFWI7Ms2PHZXbadbfhh4?si=AivBt82gSl-XGV70EFFQlQ';
 
 const mockTracks = [
-  { title: 'Shiba Spirit', artist: 'Ddergo', duration: '3:42', emoji: '🐕' },
-  { title: 'Midnight Mutation', artist: 'Naka Collective', duration: '4:11', emoji: '🌙' },
+  { title: 'Shiba Spirit', artist: 'Ddergo', duration: '3:42', Icon: Dna },
+  { title: 'Midnight Mutation', artist: 'Naka Collective', duration: '4:11', Icon: Moon },
   { title: 'Ice Cream Dreams', artist: 'VoV', duration: '2:58', emoji: '🍦' },
-  { title: 'Akaishi Sunrise', artist: 'Ddergo', duration: '5:03', emoji: '🌅' },
+  { title: 'Akaishi Sunrise', artist: 'Ddergo', duration: '5:03', Icon: Sunrise },
   { title: 'Cookie Cult', artist: 'n4kaishi8a', duration: '3:27', emoji: '🍪' },
-  { title: 'Pulse Cycle', artist: 'Naka Collective', duration: '6:14', emoji: '🔴' },
-  { title: 'NIPPO Anthem', artist: 'Ddergo feat. VoV', duration: '4:45', emoji: '🏅' },
-  { title: 'Born 1948', artist: 'Naka Go Records', duration: '3:55', emoji: '🎌' },
-];
+  { title: 'Pulse Cycle', artist: 'Naka Collective', duration: '6:14', Icon: Circle },
+  { title: 'NIPPO Anthem', artist: 'Ddergo feat. VoV', duration: '4:45', Icon: Award },
+  { title: 'Born 1948', artist: 'Naka Go Records', duration: '3:55', Icon: Flag },
+] as const;
 
 export default function DdergoPage() {
   const [suggestion, setSuggestion] = useState({ name: '', url: '', why: '' });
@@ -45,7 +51,11 @@ export default function DdergoPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-16"
           >
-            <div className="text-6xl mb-4">🍦</div>
+            <div className="flex justify-center mb-4">
+              <div className="p-4 rounded-full" style={{ background: 'rgba(29,185,84,0.1)', border: '1px solid rgba(29,185,84,0.2)' }}>
+                <Music2 className="w-12 h-12 text-[#1DB954]" />
+              </div>
+            </div>
             <h1
               className="text-5xl md:text-6xl mb-4"
               style={{
@@ -59,7 +69,7 @@ export default function DdergoPage() {
               Ddergo Records
             </h1>
             <p className="text-white/50 text-xl mb-2">The official Naka Go playlist</p>
-            <p className="text-white/30 text-sm">Curated vibes from the cult 🍦</p>
+            <p className="text-white/30 text-sm">Curated vibes from the cult</p>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
@@ -119,7 +129,11 @@ export default function DdergoPage() {
                     className="flex items-center gap-4 p-3 rounded-xl cursor-pointer transition-all"
                     style={{ background: 'rgba(255,255,255,0.03)' }}
                   >
-                    <span className="text-2xl w-8 text-center">{track.emoji}</span>
+                    <span className="w-8 flex items-center justify-center text-[#FF4D00]">
+                    {'emoji' in track
+                      ? <span className="text-xl">{track.emoji}</span>
+                      : <track.Icon className="w-5 h-5" />}
+                  </span>
                     <div className="flex-1 min-w-0">
                       <p className="text-white text-sm font-semibold truncate">{track.title}</p>
                       <p className="text-white/40 text-xs truncate">{track.artist}</p>
@@ -148,13 +162,13 @@ export default function DdergoPage() {
                     style={{ background: 'linear-gradient(135deg, #FF4D00, #FF0000)' }}
                     animate={{
                       height: [
-                        `${Math.random() * 40 + 10}px`,
-                        `${Math.random() * 60 + 10}px`,
-                        `${Math.random() * 20 + 10}px`,
+                        `${VIZ_H1[i % 20]}px`,
+                        `${VIZ_H2[i % 20]}px`,
+                        `${VIZ_H3[i % 20]}px`,
                       ],
                     }}
                     transition={{
-                      duration: 0.8 + Math.random() * 0.4,
+                      duration: VIZ_DUR[i % 20],
                       repeat: Infinity,
                       repeatType: 'reverse',
                       delay: i * 0.05,
@@ -162,7 +176,7 @@ export default function DdergoPage() {
                   />
                 ))}
               </div>
-              <p className="text-white/40 text-sm">🎵 Audio visualizer — plays along with the music</p>
+              <p className="text-white/40 text-sm flex items-center gap-1.5"><Flame className="w-3.5 h-3.5 text-[#FF4D00]" /> Audio visualizer — plays along with the music</p>
             </div>
           </motion.div>
 

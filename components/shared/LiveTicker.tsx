@@ -100,23 +100,13 @@ export default function LiveTicker() {
         )}
       </div>
 
-      {/* RIGHT: CTA */}
-      <motion.a
-        href="https://dexscreener.com/ethereum/0x6967b9a8c0b14849cfe8f9e5732b401433fd2898"
-        target="_blank"
-        rel="noopener noreferrer"
-        whileHover={{ scale: 1.03 }}
-        className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black tracking-widest flex-shrink-0"
-        style={{
-          background: 'linear-gradient(135deg, #FF4D00, #FF0000)',
-          fontFamily: 'Bebas Neue, Impact, sans-serif',
-          fontSize: 11,
-          letterSpacing: '0.15em',
-        }}
-      >
-        <Zap className="w-2.5 h-2.5" />
-        CHART
-      </motion.a>
+      {/* RIGHT: $NAKA badge */}
+      <div className="flex items-center gap-1.5 flex-shrink-0">
+        <Zap className="w-3 h-3 text-[#FF4D00]" />
+        <span className="text-[#FF4D00] text-[10px] font-black tracking-widest hidden sm:block" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif' }}>
+          $NAKA
+        </span>
+      </div>
     </div>
   );
 }

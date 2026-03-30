@@ -1,11 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import GradientButton from '@/components/shared/GradientButton';
 import ParticleField from '@/components/shared/ParticleField';
 import ShibaMascot from '@/components/shared/ShibaMascot';
+import BuyModal from '@/components/shared/BuyModal';
 
 export default function Hero() {
+  const [buyOpen, setBuyOpen] = useState(false);
   return (
     <section className="relative min-h-screen bg-[#0a0a0a] flex items-center justify-center overflow-hidden">
       {/* Particle Background */}
@@ -107,13 +110,14 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 1.0 }}
           className="flex flex-col sm:flex-row gap-4 items-center"
         >
-          <GradientButton href="#tokenomics" size="lg" variant="primary">
+          <GradientButton onClick={() => setBuyOpen(true)} size="lg" variant="primary">
             Buy $NAKA
           </GradientButton>
           <GradientButton href="#about" size="lg" variant="outline">
             Read the Story
           </GradientButton>
         </motion.div>
+        <BuyModal isOpen={buyOpen} onClose={() => setBuyOpen(false)} />
 
         {/* Stats row */}
         <motion.div
