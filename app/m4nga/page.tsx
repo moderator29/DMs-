@@ -158,10 +158,20 @@ export default function M4ngaPage() {
     }
   }, []);
 
+  // ── Mobile detection ────────────────────────────────────────────────────────
+  const isMobile = typeof navigator !== 'undefined' &&
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
   // ── Connect wallet ───────────────────────────────────────────────────────────
   const connectWallet = async () => {
+    // On mobile without injected wallet → deep-link into MetaMask browser
     if (!window.ethereum) {
-      setErrorMsg('MetaMask not detected. Please install MetaMask first.');
+      if (isMobile) {
+        const dappUrl = window.location.host + window.location.pathname;
+        window.location.href = `https://metamask.app.link/dapp/${dappUrl}`;
+        return;
+      }
+      setErrorMsg('MetaMask not detected. Please install the MetaMask browser extension.');
       return;
     }
     setWalletState('connecting');
@@ -345,10 +355,9 @@ export default function M4ngaPage() {
           <motion.div
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 4, repeat: Infinity }}
-            className="text-6xl mb-5"
-            style={{ filter: 'drop-shadow(0 0 20px rgba(255,77,0,0.5))' }}
+            className="mb-5 flex items-center justify-center"
           >
-            🎌
+            <ShieldCheck className="w-14 h-14 text-[#FF4D00]" style={{ filter: 'drop-shadow(0 0 20px rgba(255,77,0,0.5))' }} />
           </motion.div>
           <span
             className="text-[#FF4D00] text-sm font-black uppercase tracking-[0.3em] mb-3 block"
@@ -391,16 +400,23 @@ export default function M4ngaPage() {
         >
           {/* SBT Art preview */}
           <div
-            className="h-48 flex items-center justify-center relative overflow-hidden"
+            className="h-56 flex items-center justify-center relative overflow-hidden"
             style={{ background: 'linear-gradient(135deg, #1a0800, #0a0a1a)' }}
           >
             <motion.div
-              animate={{ scale: [1, 1.08, 1], rotate: [0, 2, -2, 0] }}
-              transition={{ duration: 6, repeat: Infinity }}
-              className="text-[90px]"
-              style={{ filter: 'drop-shadow(0 0 30px rgba(255,77,0,0.6))' }}
+              animate={{ scale: [1, 1.06, 1], y: [0, -8, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+              className="relative"
+              style={{ filter: 'drop-shadow(0 0 30px rgba(255,77,0,0.7))' }}
             >
-              🐕
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/mascot.png"
+                alt="Naka Go"
+                className="w-36 h-36 rounded-full object-cover"
+                style={{ border: '3px solid rgba(255,77,0,0.6)' }}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
             </motion.div>
             <motion.div
               className="absolute inset-0 pointer-events-none"
@@ -446,7 +462,7 @@ export default function M4ngaPage() {
                   }}
                 >
                   <Wallet className="w-5 h-5" />
-                  CONNECT METAMASK
+                  {isMobile ? 'OPEN IN METAMASK' : 'CONNECT METAMASK'}
                 </motion.button>
               )}
 

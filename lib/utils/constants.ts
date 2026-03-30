@@ -16,6 +16,8 @@ export const SOCIAL_LINKS = {
   uniswap: 'https://app.uniswap.org/#/swap?outputCurrency=0x6967b9a8c0b14849CFE8f9E5732B401433fD2898',
   dexscreener: 'https://dexscreener.com/ethereum/0x6967b9a8c0b14849cfe8f9e5732b401433fd2898',
   henk: 'https://x.com/cookies_and_cream_monster_bot',
+  medium: 'https://medium.com/@n4kaishi8a/the-lore-lab-42d19055de97',
+  lorelab: '/lore-lab',
 } as const;
 
 // Spotify

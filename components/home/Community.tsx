@@ -22,9 +22,9 @@ const socialLinks = [
   },
   {
     name: 'Medium',
-    href: SOCIAL_LINKS.announcement,
+    href: SOCIAL_LINKS.medium,
     icon: '📝',
-    label: '@NakaGo',
+    label: 'Lore Lab',
     color: '#02b875',
     glow: 'rgba(2,184,117,0.3)',
   },
@@ -127,7 +127,7 @@ export default function Community() {
             <motion.a
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              href={SOCIAL_LINKS.announcement}
+              href={SOCIAL_LINKS.medium}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-white font-bold"

@@ -60,7 +60,7 @@ export default function Footer() {
               {[
                 { label: 'Telegram', href: SOCIAL_LINKS.telegram, icon: '📱' },
                 { label: 'X / Twitter', href: SOCIAL_LINKS.twitter, icon: '🐦' },
-                { label: 'Lore Lab', href: SOCIAL_LINKS.announcement, icon: '📝' },
+                { label: 'Lore Lab', href: SOCIAL_LINKS.medium, icon: '📝' },
                 { label: 'Etherscan', href: SOCIAL_LINKS.etherscan, icon: '🔍' },
               ].map((link) => (
                 <li key={link.href}>
