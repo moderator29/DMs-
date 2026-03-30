@@ -73,7 +73,7 @@ export default function Header() {
           >
             {!imgError ? (
               <Image
-                src="/images/mascot.png"
+                src="https://i.ibb.co/B8zQgxk/IMG-7857.jpg"
                 alt="Naka Go"
                 width={40}
                 height={40}
