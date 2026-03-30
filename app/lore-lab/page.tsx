@@ -407,7 +407,7 @@ export default function LoreLabPage() {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/mascot.png"
+              src="https://i.ibb.co/B8zQgxk/IMG-7857.jpg"
               alt="Naka Go"
               className="w-44 h-44 rounded-full object-cover"
               style={{ border: '3px solid rgba(255,77,0,0.35)' }}

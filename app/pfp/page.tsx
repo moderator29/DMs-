@@ -328,7 +328,7 @@ export default function PfpPage() {
     const img = new window.Image();
     img.onload = () => { mascotRef.current = img; setMascotLoaded(true); };
     img.onerror = () => { mascotRef.current = null; setMascotLoaded(true); };
-    img.src = '/images/mascot.png';
+    img.src = 'https://i.ibb.co/B8zQgxk/IMG-7857.jpg';
   }, []);
 
   const redraw = useCallback(() => {

@@ -2,6 +2,9 @@ export const NAKA_ORANGE = '#FF4D00';
 export const NAKA_RED = '#FF0000';
 export const NAKA_GRADIENT = 'linear-gradient(135deg, #FF4D00 0%, #FF0000 100%)';
 
+// Mascot Image
+export const MASCOT_URL = 'https://i.ibb.co/B8zQgxk/IMG-7857.jpg';
+
 // Contract Addresses (hardcoded)
 export const NAKA_TOKEN_ADDRESS = '0x6967b9a8c0b14849CFE8f9E5732B401433fD2898' as `0x${string}`;
 export const SBT_CONTRACT_ADDRESS = '0x9AA41B74F3D87c3A27D49736692e70F175eFD420' as `0x${string}`;

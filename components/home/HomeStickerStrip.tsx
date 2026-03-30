@@ -2,87 +2,158 @@
 
 import { motion } from 'framer-motion';
 import {
-  MoonSticker, RocketSticker, CookieSticker,
-  IceCreamSticker, FireSticker, NakaGoSticker, DiamondHandsSticker, KimonoSticker
+  NakaGoSticker, NakaGoIPSticker, MoonSticker, RocketSticker,
+  HodlSticker, GmFrensSticker, KanjiSticker, WagmiSticker,
+  DiamondHandsSticker, CultSticker, KimonoSticker, BasedSticker,
+  FireSticker, CookieSticker,
 } from '@/components/shared/AnimatedStickers';
 
-const stickers = [
-  { component: NakaGoSticker, size: 160, label: 'Naka Go', delay: 0 },
-  { component: KimonoSticker, size: 160, label: 'Born 1948', delay: 0.08 },
-  { component: MoonSticker, size: 140, label: 'To The Moon', delay: 0.16 },
-  { component: RocketSticker, size: 140, label: 'Launch', delay: 0.24 },
-  { component: CookieSticker, size: 130, label: 'Pass the Cookie', delay: 0.32 },
-  { component: IceCreamSticker, size: 130, label: 'Sweet Gains', delay: 0.4 },
-  { component: FireSticker, size: 120, label: 'On Fire', delay: 0.48 },
-  { component: DiamondHandsSticker, size: 130, label: 'Diamond Hands', delay: 0.56 },
+const row1 = [
+  { C: NakaGoIPSticker,    size: 170, label: 'NAKA GO IP!',     delay: 0    },
+  { C: MoonSticker,        size: 155, label: 'NAKA MOON',       delay: 0.07 },
+  { C: HodlSticker,        size: 150, label: 'HODL',            delay: 0.14 },
+  { C: GmFrensSticker,     size: 150, label: 'GM FRENS',        delay: 0.21 },
+  { C: NakaGoSticker,      size: 165, label: 'NAKA GO',         delay: 0.28 },
+  { C: WagmiSticker,       size: 145, label: 'WAGMI',           delay: 0.35 },
+  { C: DiamondHandsSticker,size: 145, label: 'DIAMOND HANDS',   delay: 0.42 },
 ];
+
+const row2 = [
+  { C: CultSticker,        size: 150, label: 'THE CULT',        delay: 0.08 },
+  { C: KimonoSticker,      size: 150, label: 'BORN 1948',       delay: 0.16 },
+  { C: RocketSticker,      size: 145, label: 'TO THE MOON',     delay: 0.24 },
+  { C: KanjiSticker,       size: 155, label: '中号',            delay: 0.32 },
+  { C: BasedSticker,       size: 145, label: 'BASED',           delay: 0.40 },
+  { C: FireSticker,        size: 145, label: 'ON FIRE',         delay: 0.48 },
+  { C: CookieSticker,      size: 145, label: 'COOKIES & CREAM', delay: 0.56 },
+];
+
+function StickerItem({ C, size, label, delay }: { C: React.ComponentType<{size?: number}>; size: number; label: string; delay: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 60, scale: 0.7, rotate: (Math.random() - 0.5) * 20 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ delay, type: 'spring', damping: 14, stiffness: 180 }}
+      className="flex flex-col items-center gap-2 flex-shrink-0"
+    >
+      <C size={size} />
+      <motion.span
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: delay + 0.25 }}
+        className="text-white/30 text-[9px] font-black tracking-[0.25em] uppercase text-center"
+        style={{ fontFamily: 'Bebas Neue, Impact, sans-serif' }}
+      >
+        {label}
+      </motion.span>
+    </motion.div>
+  );
+}
 
 export default function HomeStickerStrip() {
   return (
-    <section className="py-20 overflow-hidden bg-[#0a0a0a] relative">
-      {/* Background */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at center, rgba(255,77,0,0.04) 0%, transparent 70%)' }}
+    <section className="py-20 overflow-hidden relative" style={{ background: '#070707' }}>
+      {/* bg glow */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(255,77,0,0.05) 0%, transparent 70%)' }} />
+
+      {/* floating bg particles */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: Math.random() * 4 + 2,
+              height: Math.random() * 4 + 2,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              background: i % 2 === 0 ? '#FF4D00' : '#FFD700',
+              opacity: 0.2,
+            }}
+            animate={{ y: [-20, 20, -20], opacity: [0.1, 0.4, 0.1] }}
+            transition={{ duration: 4 + Math.random() * 4, repeat: Infinity, delay: Math.random() * 4 }}
+          />
+        ))}
+      </div>
+
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-center mb-14 relative z-10 px-4"
+      >
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          whileInView={{ scale: 1, opacity: 1 }}
+          viewport={{ once: true }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4"
+          style={{ background: 'rgba(255,77,0,0.1)', border: '1px solid rgba(255,77,0,0.25)' }}
+        >
+          <motion.div
+            className="w-2 h-2 rounded-full bg-[#FF4D00]"
+            animate={{ scale: [1, 1.4, 1], opacity: [0.7, 1, 0.7] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+          <span className="text-[#FF4D00] text-[10px] font-black tracking-[0.35em] uppercase" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif' }}>
+            Community Sticker Pack
+          </span>
+        </motion.div>
+
+        <h2 className="text-5xl sm:text-6xl md:text-7xl font-black leading-none mb-3" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif' }}>
+          <span style={{ background: 'linear-gradient(135deg, #FF4D00 0%, #FFD700 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            THE CULTURE
+          </span>
+        </h2>
+        <p className="text-white/30 text-sm">Hover. Tap. Screenshot. Spread the legacy.</p>
+      </motion.div>
+
+      {/* Row 1 */}
+      <div className="relative z-10 mb-8 px-4">
+        <div className="flex justify-start md:justify-center items-end gap-6 md:gap-8 overflow-x-auto pb-4 scrollbar-hide" style={{ scrollSnapType: 'x mandatory' }}>
+          {row1.map((s) => (
+            <div key={s.label} style={{ scrollSnapAlign: 'center' }}>
+              <StickerItem C={s.C} size={s.size} label={s.label} delay={s.delay} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Divider */}
+      <motion.div
+        initial={{ scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="mx-auto mb-8 h-px max-w-sm"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(255,77,0,0.4), transparent)' }}
       />
 
-      {/* Section label */}
+      {/* Row 2 */}
+      <div className="relative z-10 px-4">
+        <div className="flex justify-start md:justify-center items-end gap-6 md:gap-8 overflow-x-auto pb-4 scrollbar-hide" style={{ scrollSnapType: 'x mandatory' }}>
+          {row2.map((s) => (
+            <div key={s.label} style={{ scrollSnapAlign: 'center' }}>
+              <StickerItem C={s.C} size={s.size} label={s.label} delay={s.delay} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom CTA */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-center mb-14 relative z-10"
+        transition={{ delay: 0.4 }}
+        className="text-center mt-12 relative z-10 px-4"
       >
-        <span
-          className="text-[#FF4D00] text-sm font-black uppercase tracking-[0.4em] mb-3 block"
-          style={{ fontFamily: 'Bebas Neue, Impact, sans-serif' }}
-        >
-          Naka Go Sticker Pack
-        </span>
-        <h2
-          className="text-5xl md:text-6xl text-white font-black leading-none"
-          style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', letterSpacing: '0.05em' }}
-        >
-          <span
-            style={{
-              background: 'linear-gradient(135deg, #FF4D00, #FFD700)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            THE CULTURE
-          </span>
-        </h2>
-        <p className="text-white/30 text-sm mt-3">Hover to interact. Screenshot. Share. Spread the legacy.</p>
+        <p className="text-white/20 text-xs tracking-[0.3em] uppercase" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif' }}>
+          14 stickers · more coming · screenshot & share
+        </p>
       </motion.div>
-
-      <div className="container mx-auto px-4 max-w-6xl relative z-10">
-        <div className="flex flex-wrap justify-center items-end gap-8 md:gap-12">
-          {stickers.map(({ component: Sticker, size, label, delay }, i) => (
-            <motion.div
-              key={label}
-              initial={{ opacity: 0, y: 50, scale: 0.8 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: '-30px' }}
-              transition={{ delay, type: 'spring', damping: 16, stiffness: 200 }}
-              className="text-center flex flex-col items-center"
-            >
-              <Sticker size={size} />
-              <motion.p
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: delay + 0.3 }}
-                className="text-white/40 text-xs mt-3 font-bold uppercase tracking-widest"
-                style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', letterSpacing: '0.2em' }}
-              >
-                {label}
-              </motion.p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
     </section>
   );
 }

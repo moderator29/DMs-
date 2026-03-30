@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { MASCOT_URL } from '@/lib/utils/constants';
 
 interface ShibaMascotProps {
   size?: number;
@@ -45,7 +46,7 @@ export default function ShibaMascot({ size = 300, className = '', animate: shoul
       >
         {!imgError ? (
           <Image
-            src="/images/mascot.png"
+            src={MASCOT_URL}
             alt="Naka Go — The Shiba Who Saved His Breed"
             width={size}
             height={size}
