@@ -29,8 +29,8 @@ function MutateCanvas({ fullMoon }: { fullMoon: boolean }) {
     const cat2Color = fullMoon ? '#FF0066' : '#FF00FF';
     const cellSize = 40;
 
-    let cat1 = { x: 100, y: 100, vx: 2, vy: 1.5 };
-    let cat2 = { x: canvas.width - 100, y: canvas.height - 100, vx: -1.5, vy: -2 };
+    const cat1 = { x: 100, y: 100, vx: 2, vy: 1.5 };
+    const cat2 = { x: canvas.width - 100, y: canvas.height - 100, vx: -1.5, vy: -2 };
 
     const foods = Array.from({ length: 5 }, () => ({
       emoji: ['🍕', '🍔', '🍩', fullMoon ? '🌙' : '🍦', '🐕'][Math.floor(Math.random() * 5)],
