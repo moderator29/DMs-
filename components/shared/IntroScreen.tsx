@@ -11,34 +11,41 @@ const PHASES = [
   { id: 'enter', duration: 99999 },
 ];
 
+// Pre-computed static values — no Math.random() during render
+const PARTICLE_LEFT  = [8,15,23,31,42,54,63,71,79,87,93,5,18,28,38,48,58,68,76,84,91,11,21,35,47,59,72,82,89,96];
+const PARTICLE_TOP   = [5,18,32,47,61,73,85,12,26,40,55,68,80,92,7,22,37,52,66,78,90,14,29,44,57,70,83,95,20,48];
+const PARTICLE_DUR   = [2,3,4,2.5,3.5,2,4,3,2.5,3.5,2,4,2.5,3,4,2,3.5,2.5,4,3,2,3.5,2.5,4,3,2,4,2.5,3.5,2];
+const PARTICLE_DELAY = [0,0.3,0.7,1.1,0.5,0.9,0.2,1.4,0.6,1.0,0.4,0.8,1.2,0.1,0.7,1.5,0.3,0.9,0.5,1.3,0.2,0.8,1.0,0.4,1.6,0.6,0.1,1.2,0.7,0.3];
+
 export default function IntroScreen() {
-  const [visible, setVisible] = useState(false);
+  // Initialize directly from sessionStorage — no synchronous setState in effect
+  const [skip] = useState(() =>
+    typeof window !== 'undefined' && !!sessionStorage.getItem('naka_intro_done')
+  );
   const [phase, setPhase] = useState(0);
-  const [done, setDone] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const seen = sessionStorage.getItem('naka_intro_done');
-    if (seen) { setDone(true); return; }
-    setVisible(true);
+    if (skip) return;
     let elapsed = 0;
+    const ids: ReturnType<typeof setTimeout>[] = [];
     PHASES.forEach((p, i) => {
-      if (i === PHASES.length - 1) return; // last phase waits for user
+      if (i === PHASES.length - 1) return;
       const t = setTimeout(() => setPhase(i + 1), elapsed + p.duration);
-      timeoutsRef.current.push(t);
+      ids.push(t);
       elapsed += p.duration;
     });
-    return () => timeoutsRef.current.forEach(clearTimeout);
-  }, []);
+    timeoutsRef.current = ids;
+    return () => ids.forEach(clearTimeout);
+  }, [skip]);
 
   const handleEnter = () => {
     sessionStorage.setItem('naka_intro_done', '1');
-    setDone(true);
+    setDismissed(true);
   };
 
-  if (done) return null;
-  if (!visible) return null;
+  if (skip || dismissed) return null;
 
   return (
     <AnimatePresence>
@@ -79,18 +86,18 @@ export default function IntroScreen() {
         />
 
         {/* Particle dots */}
-        {Array.from({ length: 30 }).map((_, i) => (
+        {PARTICLE_LEFT.map((left, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 rounded-full"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: `${left}%`,
+              top: `${PARTICLE_TOP[i]}%`,
               background: i % 3 === 0 ? '#FF4D00' : i % 3 === 1 ? '#FFD700' : '#fff',
-              opacity: 0.3 + Math.random() * 0.4,
+              opacity: 0.4,
             }}
             animate={{ opacity: [0.1, 0.6, 0.1], scale: [0.8, 1.4, 0.8] }}
-            transition={{ duration: 2 + Math.random() * 3, repeat: Infinity, delay: Math.random() * 2 }}
+            transition={{ duration: PARTICLE_DUR[i], repeat: Infinity, delay: PARTICLE_DELAY[i] }}
           />
         ))}
 
@@ -280,13 +287,25 @@ export default function IntroScreen() {
                 transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
                 className="space-y-8"
               >
-                {/* Shiba icon */}
+                {/* Mascot */}
                 <motion.div
-                  animate={{ y: [0, -12, 0], filter: ['drop-shadow(0 0 15px rgba(255,77,0,0.5))', 'drop-shadow(0 0 40px rgba(255,215,0,0.8))', 'drop-shadow(0 0 15px rgba(255,77,0,0.5))'] }}
+                  animate={{ y: [0, -12, 0] }}
                   transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                  className="text-7xl"
+                  className="flex justify-center"
                 >
-                  🐕
+                  <motion.div
+                    animate={{ boxShadow: ['0 0 20px rgba(255,77,0,0.5)', '0 0 50px rgba(255,215,0,0.8)', '0 0 20px rgba(255,77,0,0.5)'] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    className="w-28 h-28 rounded-full overflow-hidden"
+                    style={{ border: '3px solid rgba(255,215,0,0.6)' }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="https://i.ibb.co/B8zQgxk/IMG-7857.jpg"
+                      alt="Naka Go"
+                      className="w-full h-full object-cover"
+                    />
+                  </motion.div>
                 </motion.div>
 
                 <div>
