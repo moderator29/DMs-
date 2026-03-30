@@ -9,7 +9,7 @@ import {
 } from '@/components/shared/AnimatedStickers';
 
 const row1 = [
-  { C: NakaGoIPSticker,    size: 170, label: 'NAKA GO IP!',     delay: 0    },
+  { C: NakaGoIPSticker,    size: 170, label: 'NAKA GO UP!',     delay: 0    },
   { C: MoonSticker,        size: 155, label: 'NAKA MOON',       delay: 0.07 },
   { C: HodlSticker,        size: 150, label: 'HODL',            delay: 0.14 },
   { C: GmFrensSticker,     size: 150, label: 'GM FRENS',        delay: 0.21 },
@@ -28,10 +28,23 @@ const row2 = [
   { C: CookieSticker,      size: 145, label: 'COOKIES & CREAM', delay: 0.56 },
 ];
 
-function StickerItem({ C, size, label, delay }: { C: React.ComponentType<{size?: number}>; size: number; label: string; delay: number }) {
+// Pre-computed static values — no Math.random() during render (ESLint react-hooks/purity)
+const STICKER_ROTATIONS = [8, -12, 6, -15, 10, -8, 14, -6, 12, -10, 7, -13, 9, -7];
+
+const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+  width:    [3, 5, 2, 4, 6, 3, 5, 2, 4, 3, 5, 2, 4, 6, 3, 5, 2, 4, 3, 5][i],
+  height:   [2, 4, 5, 3, 2, 4, 5, 3, 4, 2, 4, 5, 3, 2, 4, 5, 3, 4, 2, 4][i],
+  left:     [5, 15, 25, 35, 45, 55, 65, 75, 85, 92, 8, 22, 38, 52, 68, 78, 88, 12, 42, 72][i],
+  top:      [10, 25, 40, 55, 70, 85, 15, 30, 50, 65, 80, 20, 35, 60, 75, 90, 5, 45, 62, 95][i],
+  duration: [4, 5, 6, 7, 5, 4, 6, 8, 5, 4, 7, 6, 5, 4, 8, 5, 6, 4, 7, 5][i],
+  delay:    [0, 1, 2, 3, 0.5, 1.5, 2.5, 0.8, 1.8, 2.8, 0.3, 1.3, 2.3, 0.6, 1.6, 2.6, 0.2, 1.2, 2.2, 0.9][i],
+}));
+
+function StickerItem({ C, size, label, delay, index }: { C: React.ComponentType<{size?: number}>; size: number; label: string; delay: number; index: number }) {
+  const rotate = STICKER_ROTATIONS[index % STICKER_ROTATIONS.length] ?? 0;
   return (
     <motion.div
-      initial={{ opacity: 0, y: 60, scale: 0.7, rotate: (Math.random() - 0.5) * 20 }}
+      initial={{ opacity: 0, y: 60, scale: 0.7, rotate }}
       whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ delay, type: 'spring', damping: 14, stiffness: 180 }}
@@ -60,20 +73,20 @@ export default function HomeStickerStrip() {
 
       {/* floating bg particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {Array.from({ length: 20 }).map((_, i) => (
+        {PARTICLES.map((p, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full"
             style={{
-              width: Math.random() * 4 + 2,
-              height: Math.random() * 4 + 2,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              width: p.width,
+              height: p.height,
+              left: `${p.left}%`,
+              top: `${p.top}%`,
               background: i % 2 === 0 ? '#FF4D00' : '#FFD700',
               opacity: 0.2,
             }}
             animate={{ y: [-20, 20, -20], opacity: [0.1, 0.4, 0.1] }}
-            transition={{ duration: 4 + Math.random() * 4, repeat: Infinity, delay: Math.random() * 4 }}
+            transition={{ duration: p.duration, repeat: Infinity, delay: p.delay }}
           />
         ))}
       </div>
@@ -113,9 +126,9 @@ export default function HomeStickerStrip() {
       {/* Row 1 */}
       <div className="relative z-10 mb-8 px-4">
         <div className="flex justify-start md:justify-center items-end gap-6 md:gap-8 overflow-x-auto pb-4 scrollbar-hide" style={{ scrollSnapType: 'x mandatory' }}>
-          {row1.map((s) => (
+          {row1.map((s, i) => (
             <div key={s.label} style={{ scrollSnapAlign: 'center' }}>
-              <StickerItem C={s.C} size={s.size} label={s.label} delay={s.delay} />
+              <StickerItem C={s.C} size={s.size} label={s.label} delay={s.delay} index={i} />
             </div>
           ))}
         </div>
@@ -134,9 +147,9 @@ export default function HomeStickerStrip() {
       {/* Row 2 */}
       <div className="relative z-10 px-4">
         <div className="flex justify-start md:justify-center items-end gap-6 md:gap-8 overflow-x-auto pb-4 scrollbar-hide" style={{ scrollSnapType: 'x mandatory' }}>
-          {row2.map((s) => (
+          {row2.map((s, i) => (
             <div key={s.label} style={{ scrollSnapAlign: 'center' }}>
-              <StickerItem C={s.C} size={s.size} label={s.label} delay={s.delay} />
+              <StickerItem C={s.C} size={s.size} label={s.label} delay={s.delay} index={row1.length + i} />
             </div>
           ))}
         </div>

@@ -8,6 +8,7 @@ import { Menu, X, Image as ImageIcon, Cookie, Sword, Ticket, Music, User, BookOp
 import { SOCIAL_LINKS } from '@/lib/utils/constants';
 import { useAccount, useDisconnect } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
+import MiniPlayer from '@/components/shared/MiniPlayer';
 
 const TelegramIcon = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
@@ -65,7 +66,9 @@ export default function Header() {
       style={{ top: 36 }}
     >
       <div className="container mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
-        {/* Logo */}
+        {/* Logo + MiniPlayer */}
+        <div className="flex items-center gap-2">
+        <MiniPlayer />
         <Link href="/" className="flex items-center gap-3 group">
           <motion.div
             whileHover={{ scale: 1.08, rotate: 3 }}
@@ -101,6 +104,7 @@ export default function Header() {
             </span>
           </div>
         </Link>
+        </div>
 
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-6">
@@ -215,19 +219,19 @@ export default function Header() {
             exit={{ opacity: 0, height: 0 }}
             className="lg:hidden bg-[#0a0a0a]/98 backdrop-blur-xl border-t border-white/10"
           >
-            <div className="container mx-auto px-4 py-6 flex flex-col gap-2">
-              <p className="text-white/30 text-xs uppercase tracking-widest mb-2">Main</p>
+            <div className="container mx-auto px-4 py-6 flex flex-col gap-1">
+              <p className="text-white/30 text-xs uppercase tracking-widest mb-1">Main</p>
               {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="text-white/70 hover:text-[#FF4D00] transition-colors font-semibold py-2.5 border-b border-white/5"
+                  className="text-white/70 hover:text-[#FF4D00] transition-colors font-semibold py-4 border-b border-white/5 text-base"
                 >
                   {link.label}
                 </a>
               ))}
-              <p className="text-white/30 text-xs uppercase tracking-widest mt-4 mb-2">Tools</p>
+              <p className="text-white/30 text-xs uppercase tracking-widest mt-4 mb-1">Tools</p>
               {appLinks.map((link) => {
                 const Icon = link.icon;
                 return (
@@ -235,9 +239,9 @@ export default function Header() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className="text-white/70 hover:text-[#FF4D00] transition-colors font-semibold py-2.5 border-b border-white/5 flex items-center gap-2"
+                    className="text-white/70 hover:text-[#FF4D00] transition-colors font-semibold py-4 border-b border-white/5 flex items-center gap-3 text-base"
                   >
-                    <Icon className="w-4 h-4 text-[#FF4D00]" />
+                    <Icon className="w-5 h-5 text-[#FF4D00] flex-shrink-0" />
                     {link.label}
                   </Link>
                 );

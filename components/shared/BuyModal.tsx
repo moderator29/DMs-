@@ -68,11 +68,12 @@ export default function BuyModal({ isOpen, onClose }: BuyModalProps) {
               >
                 <div className="flex items-center gap-3">
                   <motion.div
-                    animate={{ rotate: [0, 10, -10, 0] }}
+                    animate={{ scale: [1, 1.15, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="text-2xl"
+                    className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#FF4D00]/60 flex-shrink-0"
                   >
-                    🐕
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="https://i.ibb.co/B8zQgxk/IMG-7857.jpg" alt="Naka Go" className="w-full h-full object-cover" />
                   </motion.div>
                   <div>
                     <div

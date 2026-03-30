@@ -6,424 +6,272 @@ import { MASCOT_URL } from '@/lib/utils/constants';
 
 const M = MASCOT_URL;
 
-// ── Base sticker wrapper ─────────────────────────────────────────────────────
+// ── Base sticker — looks like a real die-cut sticker card ────────────────────
 function Sticker({
-  size, children, anim, hover,
+  size,
+  label,
+  accent,
+  bg,
+  delay = 0,
+  children,
+  anim,
 }: {
   size: number;
-  children: React.ReactNode;
+  label: string;
+  accent: string;
+  bg: string;
+  delay?: number;
+  children?: React.ReactNode;
   anim?: TargetAndTransition;
-  hover?: TargetAndTransition;
 }) {
   return (
     <motion.div
-      style={{ width: size, height: size, cursor: 'pointer', position: 'relative' }}
-      animate={anim}
-      whileHover={hover ?? { scale: 1.12, rotate: 3 }}
-      whileTap={{ scale: 0.94 }}
+      style={{
+        width: size,
+        flexShrink: 0,
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 6,
+      }}
+      animate={anim ?? { y: [0, -8, 0] }}
+      transition={{ duration: 3 + delay, repeat: Infinity, ease: 'easeInOut', delay }}
+      whileHover={{ scale: 1.12, rotate: 3 }}
+      whileTap={{ scale: 0.93 }}
     >
-      {children}
+      {/* Sticker card */}
+      <div
+        style={{
+          width: size,
+          height: size,
+          borderRadius: 20,
+          border: '6px solid #FFFFFF',
+          background: bg,
+          position: 'relative',
+          overflow: 'hidden',
+          boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08)`,
+        }}
+      >
+        {/* Photo */}
+        <Image src={M} alt={label} fill className="object-cover object-center" />
+        {/* Bottom label band */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: '6px 4px 5px',
+            background: `linear-gradient(to top, ${accent}EE 0%, ${accent}99 60%, transparent 100%)`,
+            textAlign: 'center',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'Bebas Neue, Impact, sans-serif',
+              fontSize: Math.round(size * 0.14),
+              color: '#fff',
+              letterSpacing: '0.12em',
+              textShadow: `0 1px 4px rgba(0,0,0,0.9), 0 0 12px ${accent}`,
+              lineHeight: 1.1,
+            }}
+          >
+            {label}
+          </span>
+        </div>
+        {/* Decorative overlay from children */}
+        {children}
+      </div>
     </motion.div>
   );
 }
 
-// ── NAKA GO IP! — mascot jumping on orange burst ──────────────────────────────
-export function NakaGoSticker({ size = 180 }: { size?: number }) {
+// ── NAKA GO UP! ───────────────────────────────────────────────────────────────
+export function NakaGoIPSticker({ size = 150 }: { size?: number }) {
   return (
-    <Sticker
-      size={size}
-      anim={{ y: [0, -16, 0], rotate: [0, 2, -2, 0] }}
-      hover={{ scale: 1.15, rotate: 5, y: -8 }}
-    >
-      {/* Burst bg */}
+    <Sticker size={size} label="NAKA GO UP!" accent="#FF4D00" bg="#1a0800" delay={0}>
+      {/* Star burst top-right */}
       <motion.div
-        className="absolute inset-0"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-      >
-        <svg viewBox="0 0 200 200" width={size} height={size} className="absolute inset-0">
-          <polygon points="100,5 120,70 185,70 133,110 154,175 100,138 46,175 67,110 15,70 80,70" fill="#FF4D00" opacity="0.85" />
-        </svg>
-      </motion.div>
-      {/* Glow */}
-      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(255,77,0,0.4), transparent 70%)' }} />
-      {/* Mascot */}
-      <div className="absolute inset-[10%] rounded-full overflow-hidden" style={{ border: '3px solid rgba(255,77,0,0.8)', boxShadow: '0 0 20px rgba(255,77,0,0.8)' }}>
-        <Image src={M} alt="Naka Go" fill className="object-cover" />
-      </div>
-      {/* Text */}
-      <div className="absolute bottom-0 left-0 right-0 text-center pb-1">
-        <span className="text-white font-black text-[11px] tracking-widest" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(255,77,0,1)', letterSpacing: '0.15em' }}>
-          NAKA GO IP!
-        </span>
-      </div>
-    </Sticker>
-  );
-}
-
-// ── NAKA MOON — mascot on golden moon circle ──────────────────────────────────
-export function MoonSticker({ size = 160 }: { size?: number }) {
-  return (
-    <Sticker
-      size={size}
-      anim={{ y: [0, -14, 0] }}
-      hover={{ scale: 1.13, rotate: -4, y: -6 }}
-    >
-      {/* Moon glow */}
-      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(255,215,0,0.3), transparent 70%)' }} />
-      {/* Moon circle */}
-      <div className="absolute inset-[5%] rounded-full" style={{ background: 'linear-gradient(135deg, #2a2000, #1a1400)', border: '3px solid #FFD700', boxShadow: '0 0 25px rgba(255,215,0,0.5), inset 0 0 20px rgba(255,215,0,0.1)' }}>
-        {/* Stars */}
-        {[[20,15],[75,10],[15,65],[80,55],[10,90]].map(([x,y],i) => (
-          <motion.div key={i} className="absolute w-1 h-1 rounded-full bg-yellow-300"
-            style={{ left: `${x}%`, top: `${y}%` }}
-            animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.2, 0.8] }}
-            transition={{ duration: 1.5 + i * 0.4, repeat: Infinity, delay: i * 0.3 }}
-          />
-        ))}
-        <div className="absolute inset-[12%] rounded-full overflow-hidden">
-          <Image src={M} alt="Naka Go" fill className="object-cover" />
-        </div>
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 text-center">
-        <span className="text-[#FFD700] font-black text-[11px]" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(255,215,0,0.8)', letterSpacing: '0.15em' }}>
-          NAKA MOON
-        </span>
-      </div>
-    </Sticker>
-  );
-}
-
-// ── HODL — mascot with golden crown ──────────────────────────────────────────
-export function HodlSticker({ size = 160 }: { size?: number }) {
-  return (
-    <Sticker
-      size={size}
-      anim={{ y: [0, -10, 0], rotate: [0, -3, 3, 0] }}
-      hover={{ scale: 1.14, y: -8 }}
-    >
-      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,215,0,0.2), transparent 70%)' }} />
-      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #FFD700', boxShadow: '0 0 20px rgba(255,215,0,0.5)' }}>
-        <Image src={M} alt="Naka Go" fill className="object-cover" />
-      </div>
-      {/* Crown SVG */}
-      <svg className="absolute top-0 left-1/2 -translate-x-1/2" width={size * 0.55} height={size * 0.3} viewBox="0 0 100 50">
-        <polygon points="10,45 10,15 30,30 50,5 70,30 90,15 90,45" fill="#FFD700" stroke="#CC8800" strokeWidth="2" />
-        <circle cx="50" cy="5" r="5" fill="#FF4D00" />
-        <circle cx="10" cy="15" r="4" fill="#FF4D00" />
-        <circle cx="90" cy="15" r="4" fill="#FF4D00" />
-        <motion.path d="M50,5 L50,0" stroke="#FFD700" strokeWidth="1" strokeOpacity="0.6"
-          animate={{ strokeOpacity: [0.3, 1, 0.3] }} transition={{ duration: 1, repeat: Infinity }} />
-      </svg>
-      <div className="absolute bottom-0 left-0 right-0 text-center">
-        <span className="text-[#FFD700] font-black text-[12px]" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 10px rgba(255,215,0,0.9)', letterSpacing: '0.2em' }}>HODL</span>
-      </div>
-    </Sticker>
-  );
-}
-
-// ── GM FRENS — green happy glow ───────────────────────────────────────────────
-export function GmFrensSticker({ size = 160 }: { size?: number }) {
-  return (
-    <Sticker
-      size={size}
-      anim={{ scale: [1, 1.04, 1], y: [0, -8, 0] }}
-      hover={{ scale: 1.15, rotate: -5 }}
-    >
-      <motion.div
-        className="absolute inset-0 rounded-full"
-        animate={{ opacity: [0.3, 0.7, 0.3] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        style={{ background: 'radial-gradient(circle, rgba(0,255,136,0.25), transparent 70%)' }}
-      />
-      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #00FF88', boxShadow: '0 0 20px rgba(0,255,136,0.5)' }}>
-        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'hue-rotate(10deg) saturate(1.2)' }} />
-      </div>
-      {/* Sparkles */}
-      {[[10,20],[85,15],[5,75],[90,65],[50,5]].map(([x,y],i) => (
-        <motion.div key={i} className="absolute text-[10px]" style={{ left: `${x}%`, top: `${y}%` }}
-          animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5], rotate: [0, 180, 360] }}
-          transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
-        >✦</motion.div>
-      ))}
-      <div className="absolute bottom-0 left-0 right-0 text-center">
-        <span className="font-black text-[11px]" style={{ color: '#00FF88', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(0,255,136,0.9)', letterSpacing: '0.15em' }}>GM FRENS</span>
-      </div>
-    </Sticker>
-  );
-}
-
-// ── 中号 — imperial kanji badge ──────────────────────────────────────────────
-export function KanjiSticker({ size = 160 }: { size?: number }) {
-  return (
-    <Sticker
-      size={size}
-      anim={{ y: [0, -12, 0] }}
-      hover={{ scale: 1.12, rotate: 2 }}
-    >
-      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,77,0,0.15), transparent 70%)' }} />
-      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid rgba(255,77,0,0.7)' }}>
-        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'sepia(20%)' }} />
-        {/* Overlay kanji */}
-        <div className="absolute inset-0 flex items-end justify-center pb-2">
-          <span className="text-2xl font-black text-[#FFD700]" style={{ textShadow: '0 0 15px rgba(255,215,0,0.8)', fontFamily: 'var(--font-noto-sans-jp)' }}>中号</span>
-        </div>
-      </div>
-      {/* Corner decorations */}
-      {[[4,4],[88,4],[4,88],[88,88]].map(([x,y],i) => (
-        <motion.div key={i} className="absolute w-3 h-3 rounded-full bg-[#FFD700] opacity-60"
-          style={{ left: `${x}%`, top: `${y}%` }}
-          animate={{ opacity: [0.3, 0.8, 0.3] }}
-          transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
-        />
-      ))}
-    </Sticker>
-  );
-}
-
-// ── WAGMI — rainbow glow ──────────────────────────────────────────────────────
-export function WagmiSticker({ size = 160 }: { size?: number }) {
-  return (
-    <Sticker
-      size={size}
-      anim={{ rotate: [0, 3, -3, 0], y: [0, -8, 0] }}
-      hover={{ scale: 1.15, rotate: 8 }}
-    >
-      <motion.div
-        className="absolute inset-0 rounded-full"
+        style={{ position: 'absolute', top: 4, right: 4 }}
         animate={{ rotate: 360 }}
         transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-        style={{ background: 'conic-gradient(#FF4D00, #FFD700, #00FF88, #5B8EFF, #CC44FF, #FF4D00)', borderRadius: '50%' }}
-      />
-      <div className="absolute inset-[4%] rounded-full overflow-hidden bg-[#0a0a0a]">
-        <div className="absolute inset-[8%] rounded-full overflow-hidden">
-          <Image src={M} alt="Naka Go" fill className="object-cover" />
-        </div>
-      </div>
-      <div className="absolute bottom-1 left-0 right-0 text-center">
-        <span className="font-black text-[11px] text-white" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', letterSpacing: '0.15em', textShadow: '0 0 8px rgba(255,255,255,0.8)' }}>WAGMI</span>
-      </div>
-    </Sticker>
-  );
-}
-
-// ── DIAMOND HANDS ─────────────────────────────────────────────────────────────
-export function DiamondHandsSticker({ size = 160 }: { size?: number }) {
-  return (
-    <Sticker
-      size={size}
-      anim={{ y: [0, -12, 0], rotate: [0, -3, 3, 0] }}
-      hover={{ scale: 1.14, rotate: -6 }}
-    >
-      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(91,142,255,0.2), transparent 70%)' }} />
-      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #5B8EFF', boxShadow: '0 0 20px rgba(91,142,255,0.5)' }}>
-        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'saturate(0.9) brightness(1.05)' }} />
-      </div>
-      {/* Diamond SVG corner */}
-      <svg className="absolute top-1 right-1" width={size * 0.22} height={size * 0.22} viewBox="0 0 40 40">
-        <polygon points="20,2 35,18 20,38 5,18" fill="#A8EDFF" stroke="#5B8EFF" strokeWidth="1.5" />
-        <polygon points="20,2 35,18 20,18 5,18" fill="white" opacity="0.3" />
-      </svg>
-      <div className="absolute bottom-0 left-0 right-0 text-center">
-        <span className="font-black text-[11px]" style={{ color: '#5B8EFF', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(91,142,255,0.9)', letterSpacing: '0.15em' }}>DIAMOND HANDS</span>
-      </div>
-    </Sticker>
-  );
-}
-
-// ── TO THE MOON — rocket trail ────────────────────────────────────────────────
-export function RocketSticker({ size = 160 }: { size?: number }) {
-  return (
-    <Sticker
-      size={size}
-      anim={{ y: [0, -20, 0], rotate: [-4, 4, -4] }}
-      hover={{ scale: 1.18, rotate: -10, y: -12 }}
-    >
-      {/* Rocket trail */}
-      <motion.div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 rounded-full"
-        style={{ background: 'linear-gradient(to top, transparent, #FF4D00, #FFD700)', height: size * 0.35, opacity: 0.7 }}
-        animate={{ scaleY: [0.8, 1.2, 0.8], opacity: [0.5, 0.9, 0.5] }}
-        transition={{ duration: 0.6, repeat: Infinity }}
-      />
-      <div className="absolute inset-[10%] rounded-full overflow-hidden" style={{ border: '3px solid rgba(255,77,0,0.7)', boxShadow: '0 0 20px rgba(255,77,0,0.5)' }}>
-        <Image src={M} alt="Naka Go" fill className="object-cover" />
-      </div>
-      <div className="absolute top-1 left-0 right-0 text-center">
-        <span className="font-black text-[10px]" style={{ color: '#FFD700', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(255,215,0,1)', letterSpacing: '0.12em' }}>TO THE MOON</span>
-      </div>
-    </Sticker>
-  );
-}
-
-// ── THE CULT — purple dark vibes ──────────────────────────────────────────────
-export function CultSticker({ size = 160 }: { size?: number }) {
-  return (
-    <Sticker
-      size={size}
-      anim={{ scale: [1, 1.03, 1] }}
-      hover={{ scale: 1.13, rotate: -4 }}
-    >
-      <motion.div
-        className="absolute inset-0 rounded-full"
-        animate={{ opacity: [0.3, 0.7, 0.3] }}
-        transition={{ duration: 2.5, repeat: Infinity }}
-        style={{ background: 'radial-gradient(circle, rgba(204,68,255,0.3), transparent 70%)' }}
-      />
-      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #CC44FF', boxShadow: '0 0 25px rgba(204,68,255,0.6)' }}>
-        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'hue-rotate(200deg) saturate(0.8) brightness(0.9)' }} />
-      </div>
-      {/* Orbiting dot */}
-      <motion.div
-        className="absolute w-3 h-3 rounded-full bg-[#CC44FF]"
-        style={{ top: '8%', left: '50%', transformOrigin: `0 ${size * 0.42}px` }}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-      />
-      <div className="absolute bottom-0 left-0 right-0 text-center">
-        <span className="font-black text-[11px]" style={{ color: '#CC44FF', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(204,68,255,0.9)', letterSpacing: '0.15em' }}>THE CULT</span>
-      </div>
-    </Sticker>
-  );
-}
-
-// ── BORN 1948 — vintage sepia ─────────────────────────────────────────────────
-export function KimonoSticker({ size = 160 }: { size?: number }) {
-  return (
-    <Sticker
-      size={size}
-      anim={{ y: [0, -10, 0] }}
-      hover={{ scale: 1.12, rotate: 3 }}
-    >
-      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,77,0,0.12), transparent 70%)' }} />
-      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid rgba(212,168,0,0.8)', boxShadow: '0 0 15px rgba(212,168,0,0.4)' }}>
-        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'sepia(40%) saturate(1.3) brightness(0.95)' }} />
-      </div>
-      {/* Red seal-stamp overlay */}
-      <div className="absolute bottom-[18%] right-[10%] w-8 h-8 rounded flex items-center justify-center"
-        style={{ background: 'rgba(180,0,0,0.85)', border: '1px solid rgba(255,100,100,0.5)', rotate: '12deg' }}
       >
-        <span className="text-white text-[8px] font-black" style={{ fontFamily: 'var(--font-noto-sans-jp)' }}>中</span>
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 text-center">
-        <span className="font-black text-[11px]" style={{ color: '#D4A800', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(212,168,0,0.8)', letterSpacing: '0.15em' }}>BORN 1948</span>
-      </div>
-    </Sticker>
-  );
-}
-
-// ── BASED — cool blue cyber ───────────────────────────────────────────────────
-export function BasedSticker({ size = 160 }: { size?: number }) {
-  return (
-    <Sticker
-      size={size}
-      anim={{ y: [0, -8, 0], rotate: [0, 2, -2, 0] }}
-      hover={{ scale: 1.13, rotate: 5 }}
-    >
-      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(0,255,255,0.15), transparent 70%)' }} />
-      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #00FFFF', boxShadow: '0 0 20px rgba(0,255,255,0.4)' }}>
-        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'saturate(0.7) hue-rotate(180deg) brightness(1.1)' }} />
-      </div>
-      {/* Scan line effect */}
-      <motion.div
-        className="absolute inset-[8%] rounded-full pointer-events-none overflow-hidden"
-        style={{ border: '3px solid transparent' }}
-      >
-        <motion.div
-          className="absolute left-0 right-0 h-[2px] bg-[#00FFFF] opacity-30"
-          animate={{ top: ['0%', '100%'] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-        />
+        <svg width={size * 0.22} height={size * 0.22} viewBox="0 0 30 30">
+          <polygon points="15,2 18,11 28,11 20,17 23,26 15,20 7,26 10,17 2,11 12,11" fill="#FF4D00" />
+        </svg>
       </motion.div>
-      <div className="absolute bottom-0 left-0 right-0 text-center">
-        <span className="font-black text-[12px]" style={{ color: '#00FFFF', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(0,255,255,0.9)', letterSpacing: '0.2em' }}>BASED</span>
+    </Sticker>
+  );
+}
+
+export function NakaGoSticker({ size = 150 }: { size?: number }) {
+  return (
+    <Sticker size={size} label="NAKA GO" accent="#FF4D00" bg="#1a0800" delay={0.3}>
+      <div style={{ position: 'absolute', top: 4, left: 4 }}>
+        <svg width={size * 0.22} height={size * 0.22} viewBox="0 0 30 30">
+          <polygon points="15,2 18,11 28,11 20,17 23,26 15,20 7,26 10,17 2,11 12,11" fill="#FF4D00" />
+        </svg>
       </div>
     </Sticker>
   );
 }
 
-// ── FIRE — on fire pulse ──────────────────────────────────────────────────────
-export function FireSticker({ size = 160 }: { size?: number }) {
+// ── NAKA MOON ─────────────────────────────────────────────────────────────────
+export function MoonSticker({ size = 150 }: { size?: number }) {
   return (
-    <Sticker
-      size={size}
-      anim={{ scale: [1, 1.05, 1] }}
-      hover={{ scale: 1.16, y: -6 }}
-    >
-      <motion.div
-        className="absolute inset-0 rounded-full"
-        animate={{ opacity: [0.4, 0.9, 0.4] }}
-        transition={{ duration: 0.8, repeat: Infinity }}
-        style={{ background: 'radial-gradient(circle, rgba(255,77,0,0.5), transparent 70%)' }}
-      />
-      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #FF4D00', boxShadow: '0 0 30px rgba(255,77,0,0.8)' }}>
-        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'saturate(1.5) brightness(1.1)' }} />
-      </div>
-      {/* Flame particles */}
-      {[20, 50, 80].map((x, i) => (
+    <Sticker size={size} label="NAKA MOON" accent="#FFD700" bg="#0a0a1a" delay={0.5}>
+      {/* Stars */}
+      {[[10, 10], [80, 8], [88, 30], [5, 55]].map(([x, y], i) => (
         <motion.div
           key={i}
-          className="absolute bottom-[10%] text-base"
-          style={{ left: `${x}%` }}
-          animate={{ y: [0, -20, 0], opacity: [0.8, 0, 0.8], scale: [0.8, 1.3, 0.8] }}
-          transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.4 }}
-        >🔥</motion.div>
+          style={{ position: 'absolute', left: `${x}%`, top: `${y}%`, width: 4, height: 4, borderRadius: '50%', background: '#FFD700' }}
+          animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.3, 0.8] }}
+          transition={{ duration: 1.5 + i * 0.4, repeat: Infinity, delay: i * 0.3 }}
+        />
       ))}
-      <div className="absolute top-1 left-0 right-0 text-center">
-        <span className="font-black text-[12px]" style={{ color: '#FF4D00', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 10px #FF4D00', letterSpacing: '0.2em' }}>ON FIRE</span>
+    </Sticker>
+  );
+}
+
+// ── HODL ──────────────────────────────────────────────────────────────────────
+export function HodlSticker({ size = 150 }: { size?: number }) {
+  return (
+    <Sticker size={size} label="HODL" accent="#FFD700" bg="#100800" delay={0.2}>
+      {/* Crown */}
+      <div style={{ position: 'absolute', top: 2, left: '50%', transform: 'translateX(-50%)' }}>
+        <svg width={size * 0.4} height={size * 0.2} viewBox="0 0 80 35">
+          <polygon points="5,30 5,10 22,22 40,2 58,22 75,10 75,30" fill="#FFD700" stroke="#CC8800" strokeWidth="2" />
+          <circle cx="40" cy="2" r="5" fill="#FF4D00" />
+          <circle cx="5" cy="10" r="3.5" fill="#FF4D00" />
+          <circle cx="75" cy="10" r="3.5" fill="#FF4D00" />
+        </svg>
       </div>
     </Sticker>
   );
 }
 
-// ── ICE CREAM / COOKIES sticker ───────────────────────────────────────────────
-export function CookieSticker({ size = 160 }: { size?: number }) {
+// ── GM FRENS ──────────────────────────────────────────────────────────────────
+export function GmFrensSticker({ size = 150 }: { size?: number }) {
   return (
-    <Sticker
-      size={size}
-      anim={{ rotate: [0, 6, -6, 0], y: [0, -8, 0] }}
-      hover={{ scale: 1.13, rotate: -8 }}
-    >
-      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(212,130,42,0.2), transparent 70%)' }} />
-      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #D4822A', boxShadow: '0 0 15px rgba(212,130,42,0.5)' }}>
-        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'sepia(30%) saturate(1.4) hue-rotate(-10deg)' }} />
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 text-center">
-        <span className="font-black text-[10px]" style={{ color: '#D4822A', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(212,130,42,0.8)', letterSpacing: '0.12em' }}>COOKIES & CREAM</span>
-      </div>
-    </Sticker>
+    <Sticker size={size} label="GM FRENS" accent="#00FF88" bg="#001a0a" delay={0.7}
+      anim={{ y: [0, -8, 0], scale: [1, 1.02, 1] }}
+    />
   );
 }
 
-// ── IceCreamSticker alias ─────────────────────────────────────────────────────
-export function IceCreamSticker({ size = 160 }: { size?: number }) {
-  return <GmFrensSticker size={size} />;
-}
-
-// ── NakaGoIPSticker — extra "IP" variant ─────────────────────────────────────
-export function NakaGoIPSticker({ size = 180 }: { size?: number }) {
+// ── WAGMI ────────────────────────────────────────────────────────────────────
+export function WagmiSticker({ size = 150 }: { size?: number }) {
   return (
-    <Sticker
-      size={size}
-      anim={{ y: [0, -18, 0], scale: [1, 1.03, 1] }}
-      hover={{ scale: 1.18, rotate: 6, y: -10 }}
-    >
-      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,77,0,0.3), transparent 65%)' }} />
-      <div className="absolute inset-[6%] rounded-full overflow-hidden" style={{ border: '4px solid #FF4D00', boxShadow: '0 0 30px rgba(255,77,0,0.7)' }}>
-        <Image src={M} alt="Naka Go" fill className="object-cover" />
-      </div>
-      {/* Animated ring */}
+    <Sticker size={size} label="WAGMI" accent="#CC44FF" bg="#0d0020" delay={0.4}>
+      {/* Spinning rainbow ring overlay */}
       <motion.div
-        className="absolute inset-[3%] rounded-full"
-        style={{ border: '2px dashed rgba(255,77,0,0.5)' }}
+        style={{ position: 'absolute', inset: 0, borderRadius: 14, opacity: 0.35 }}
         animate={{ rotate: 360 }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+        transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
+      >
+        <div style={{ width: '100%', height: '100%', borderRadius: 14, background: 'conic-gradient(from 0deg, #FF4D00, #FFD700, #00FF88, #00FFFF, #CC44FF, #FF4D00)', opacity: 0.5 }} />
+      </motion.div>
+    </Sticker>
+  );
+}
+
+// ── DIAMOND HANDS ────────────────────────────────────────────────────────────
+export function DiamondHandsSticker({ size = 150 }: { size?: number }) {
+  return (
+    <Sticker size={size} label="DIAMOND HANDS" accent="#00BFFF" bg="#001020" delay={0.9}>
+      <div style={{ position: 'absolute', top: 4, right: 4 }}>
+        <svg width={size * 0.22} height={size * 0.22} viewBox="0 0 30 30">
+          <polygon points="15,2 28,12 22,28 8,28 2,12" fill="none" stroke="#00BFFF" strokeWidth="2" opacity="0.8" />
+          <polygon points="15,5 25,13 20,26 10,26 5,13" fill="#00BFFF" opacity="0.3" />
+        </svg>
+      </div>
+    </Sticker>
+  );
+}
+
+// ── ROCKET ───────────────────────────────────────────────────────────────────
+export function RocketSticker({ size = 150 }: { size?: number }) {
+  return (
+    <Sticker size={size} label="TO THE MOON" accent="#FF6B00" bg="#120800" delay={1.1}
+      anim={{ y: [0, -12, 0], rotate: [0, 2, 0] }}
+    >
+      <div style={{ position: 'absolute', top: 3, right: 5 }}>
+        <svg width={size * 0.2} height={size * 0.2} viewBox="0 0 28 28">
+          <path d="M14 2 C14 2 22 6 22 14 L18 18 L10 18 L6 14 C6 6 14 2 14 2Z" fill="#FF6B00" opacity="0.9" />
+          <circle cx="14" cy="12" r="3" fill="white" opacity="0.7" />
+          <path d="M10 18 L8 24 L14 20 L20 24 L18 18Z" fill="#FFD700" opacity="0.8" />
+        </svg>
+      </div>
+    </Sticker>
+  );
+}
+
+// ── THE CULT ─────────────────────────────────────────────────────────────────
+export function CultSticker({ size = 150 }: { size?: number }) {
+  return (
+    <Sticker size={size} label="THE CULT" accent="#9B30FF" bg="#0d0020" delay={0.6}>
+      <motion.div
+        style={{ position: 'absolute', top: 4, left: 4, width: 8, height: 8, borderRadius: '50%', background: '#9B30FF' }}
+        animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.4, 0.8] }}
+        transition={{ duration: 2, repeat: Infinity }}
       />
-      <div className="absolute -bottom-1 left-0 right-0 text-center">
-        <div className="inline-block px-3 py-0.5 rounded-full" style={{ background: 'linear-gradient(135deg, #FF4D00, #FF0000)', boxShadow: '0 0 12px rgba(255,77,0,0.7)' }}>
-          <span className="font-black text-white text-[11px]" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', letterSpacing: '0.2em' }}>NAKA GO IP!</span>
+    </Sticker>
+  );
+}
+
+// ── KIMONO ───────────────────────────────────────────────────────────────────
+export function KimonoSticker({ size = 150 }: { size?: number }) {
+  return (
+    <Sticker size={size} label="BORN 1948" accent="#FF4D00" bg="#1a0800" delay={0.8}>
+      <div style={{ position: 'absolute', top: 4, left: 4 }}>
+        <div style={{ width: size * 0.2, height: size * 0.2, borderRadius: 4, background: '#CC0000', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'rotate(-8deg)', opacity: 0.85 }}>
+          <span style={{ color: 'white', fontSize: size * 0.1, fontFamily: 'serif', fontWeight: 'bold' }}>中</span>
         </div>
       </div>
+    </Sticker>
+  );
+}
+
+// ── KANJI ────────────────────────────────────────────────────────────────────
+export function KanjiSticker({ size = 150 }: { size?: number }) {
+  return (
+    <Sticker size={size} label="中号" accent="#FFD700" bg="#0a0800" delay={1.2}>
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-80%)', opacity: 0.18 }}>
+        <span style={{ fontSize: size * 0.7, fontFamily: 'serif', color: '#FFD700', fontWeight: 'bold', lineHeight: 1 }}>中</span>
+      </div>
+    </Sticker>
+  );
+}
+
+// ── BASED ────────────────────────────────────────────────────────────────────
+export function BasedSticker({ size = 150 }: { size?: number }) {
+  return (
+    <Sticker size={size} label="BASED" accent="#00FFFF" bg="#001a1a" delay={1.4}>
+      {/* Scan line */}
+      <motion.div
+        style={{ position: 'absolute', left: 0, right: 0, height: 2, background: 'rgba(0,255,255,0.4)', top: 0 }}
+        animate={{ top: ['10%', '90%', '10%'] }}
+        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+      />
+    </Sticker>
+  );
+}
+
+// ── FIRE ─────────────────────────────────────────────────────────────────────
+export function FireSticker({ size = 150 }: { size?: number }) {
+  return (
+    <Sticker size={size} label="ON FIRE" accent="#FF2200" bg="#1a0000" delay={0.15}
+      anim={{ y: [0, -8, 0], scale: [1, 1.03, 1] }}
+    />
+  );
+}
+
+// ── COOKIE ───────────────────────────────────────────────────────────────────
+export function CookieSticker({ size = 150 }: { size?: number }) {
+  return (
+    <Sticker size={size} label="COOKIES & CREAM" accent="#CC8800" bg="#1a0f00" delay={1.0}>
+      <div style={{ position: 'absolute', top: 4, right: 4, fontSize: size * 0.12 }}>🍪</div>
     </Sticker>
   );
 }

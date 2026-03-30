@@ -2,38 +2,42 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Check, ExternalLink } from 'lucide-react';
+import { Copy, Check, ExternalLink, Lock, Flame, Users, Percent } from 'lucide-react';
 
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_SBT_CONTRACT_ADDRESS ?? '0x9AA41B74F3D87c3A27D49736692e70F175eFD420';
 
 const trustBadges = [
   {
-    icon: '🔒',
+    Icon: Lock,
     title: 'Renounced',
     desc: 'Contract ownership renounced forever',
     glow: 'rgba(255,237,78,0.3)',
     border: 'rgba(255,237,78,0.4)',
+    color: '#FFed4e',
   },
   {
-    icon: '0%',
+    Icon: Percent,
     title: '0/0 Tax',
     desc: 'Zero buy tax. Zero sell tax. Ever.',
     glow: 'rgba(0,255,136,0.3)',
     border: 'rgba(0,255,136,0.4)',
+    color: '#00FF88',
   },
   {
-    icon: '🔥',
+    Icon: Flame,
     title: 'LP Burnt',
     desc: '100% liquidity burned. Rug-proof.',
     glow: 'rgba(0,180,255,0.3)',
     border: 'rgba(0,180,255,0.4)',
+    color: '#00B4FF',
   },
   {
-    icon: '👥',
+    Icon: Users,
     title: 'Fair Launch',
     desc: 'No presale. No team allocation. Pure community.',
     glow: 'rgba(255,77,0,0.3)',
     border: 'rgba(255,77,0,0.4)',
+    color: '#FF4D00',
   },
 ];
 
@@ -128,11 +132,8 @@ export default function Tokenomics() {
                 (e.currentTarget as HTMLElement).style.boxShadow = `0 0 20px ${badge.glow}`;
               }}
             >
-              <div
-                className="text-3xl mb-3 font-bold"
-                style={{ fontFamily: typeof badge.icon === 'string' && badge.icon === '0%' ? 'var(--font-permanent-marker)' : undefined }}
-              >
-                {badge.icon}
+              <div className="mb-3" style={{ color: badge.color }}>
+                <badge.Icon className="w-8 h-8" />
               </div>
               <h3
                 className="text-xl text-white mb-2"

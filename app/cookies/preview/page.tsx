@@ -52,22 +52,19 @@ function CookiePreviewCard({ message }: { message: string }) {
 
 export default function PreviewCookiePage() {
   const router = useRouter();
-  const [message, setMessage] = useState('');
-  const [postUrl, setPostUrl] = useState('');
+  const [message] = useState(() =>
+    typeof window !== 'undefined' ? (localStorage.getItem('cookieMessage') ?? '') : ''
+  );
+  const [postUrl] = useState(() =>
+    typeof window !== 'undefined' ? (localStorage.getItem('cookiePostUrl') ?? '') : ''
+  );
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedMessage = localStorage.getItem('cookieMessage');
-      const savedUrl = localStorage.getItem('cookiePostUrl');
-      if (!savedMessage || !savedUrl) {
-        router.push('/cookies/create');
-        return;
-      }
-      setMessage(savedMessage);
-      setPostUrl(savedUrl);
+    if (!message || !postUrl) {
+      router.push('/cookies/create');
     }
-  }, [router]);
+  }, [message, postUrl, router]);
 
   const cookieText = formatCookieText(message, isFullMoon());
 

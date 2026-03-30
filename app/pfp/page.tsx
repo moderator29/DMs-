@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowLeft, Download, Shuffle, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/layout/Header';
@@ -326,8 +326,15 @@ export default function PfpPage() {
   // Load mascot image once
   useEffect(() => {
     const img = new window.Image();
+    img.crossOrigin = 'anonymous';
     img.onload = () => { mascotRef.current = img; setMascotLoaded(true); };
-    img.onerror = () => { mascotRef.current = null; setMascotLoaded(true); };
+    img.onerror = () => {
+      // Fallback: load without CORS header (canvas will be tainted but still displays)
+      const img2 = new window.Image();
+      img2.onload = () => { mascotRef.current = img2; setMascotLoaded(true); };
+      img2.onerror = () => { mascotRef.current = null; setMascotLoaded(true); };
+      img2.src = 'https://i.ibb.co/B8zQgxk/IMG-7857.jpg';
+    };
     img.src = 'https://i.ibb.co/B8zQgxk/IMG-7857.jpg';
   }, []);
 
