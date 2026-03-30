@@ -246,14 +246,42 @@ function renderCanvas(
   bg: typeof BACKGROUNDS[0],
   frame: typeof FRAMES[0],
   badge: typeof BADGES[0],
-  mood: string
+  mood: string,
+  mascotImg?: HTMLImageElement | null
 ) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   ctx.clearRect(0, 0, SIZE, SIZE);
   drawBackground(ctx, bg);
+
+  if (mascotImg && mascotImg.complete && mascotImg.naturalWidth > 0) {
+    // Draw real mascot image as circular crop centered
+    const cx = SIZE / 2, cy = SIZE * 0.46;
+    const r = SIZE * 0.34;
+    ctx.save();
+    // Glow behind mascot
+    ctx.shadowColor = frame.color !== 'transparent' ? frame.color : '#FF4D00';
+    ctx.shadowBlur = 30;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.drawImage(mascotImg, cx - r, cy - r, r * 2, r * 2);
+    ctx.restore();
+    // Circle border
+    ctx.save();
+    ctx.strokeStyle = frame.color !== 'transparent' ? frame.color : 'rgba(255,77,0,0.7)';
+    ctx.lineWidth = 4;
+    ctx.shadowColor = frame.color !== 'transparent' ? frame.color : '#FF4D00';
+    ctx.shadowBlur = 20;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  } else {
+    drawShibaFace(ctx, SIZE / 2, SIZE * 0.48, SIZE * 0.29, mood, frame.color);
+  }
+
   drawFrame(ctx, frame);
-  drawShibaFace(ctx, SIZE / 2, SIZE * 0.48, SIZE * 0.29, mood, frame.color);
   drawBadge(ctx, badge);
 }
 
@@ -287,15 +315,25 @@ function OptionBtn({
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default function PfpPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mascotRef = useRef<HTMLImageElement | null>(null);
   const [bg, setBg] = useState(BACKGROUNDS[0]);
   const [frame, setFrame] = useState(FRAMES[0]);
   const [badge, setBadge] = useState(BADGES[0]);
   const [mood, setMood] = useState('noble');
   const [downloading, setDownloading] = useState(false);
+  const [mascotLoaded, setMascotLoaded] = useState(false);
+
+  // Load mascot image once
+  useEffect(() => {
+    const img = new window.Image();
+    img.onload = () => { mascotRef.current = img; setMascotLoaded(true); };
+    img.onerror = () => { mascotRef.current = null; setMascotLoaded(true); };
+    img.src = 'https://i.ibb.co/B8zQgxk/IMG-7857.jpg';
+  }, []);
 
   const redraw = useCallback(() => {
-    if (canvasRef.current) renderCanvas(canvasRef.current, bg, frame, badge, mood);
-  }, [bg, frame, badge, mood]);
+    if (canvasRef.current) renderCanvas(canvasRef.current, bg, frame, badge, mood, mascotRef.current);
+  }, [bg, frame, badge, mood, mascotLoaded]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { redraw(); }, [redraw]);
 
@@ -310,12 +348,12 @@ export default function PfpPage() {
     }, 200);
   };
 
-  const randomize = () => {
+  const randomize = useCallback(() => {
     setBg(BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)]);
     setFrame(FRAMES[Math.floor(Math.random() * (FRAMES.length - 1))]);
     setBadge(BADGES[Math.floor(Math.random() * (BADGES.length - 1))]);
     setMood(MOODS[Math.floor(Math.random() * MOODS.length)].id);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">

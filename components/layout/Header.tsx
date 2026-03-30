@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Menu, X, Home } from 'lucide-react';
+import { Menu, X, Image as ImageIcon, Cookie, Sword, Ticket, Music, User, BookOpen, Wallet } from 'lucide-react';
 import { SOCIAL_LINKS } from '@/lib/utils/constants';
+import { useAccount, useDisconnect } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 
 const TelegramIcon = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
@@ -27,17 +29,22 @@ const navLinks = [
 ];
 
 const appLinks = [
-  { label: 'Gallery', href: '/gallery', emoji: '🖼' },
-  { label: 'Cookies', href: '/cookies', emoji: '🍪' },
-  { label: 'M4nga', href: '/m4nga', emoji: '🎌' },
-  { label: 'Lottery', href: '/lottery', emoji: '🎰' },
-  { label: 'Ddergo', href: '/ddergo', emoji: '🎵' },
-  { label: 'PFP', href: '/pfp', emoji: '🎨' },
+  { label: 'Gallery',   href: '/gallery',   icon: ImageIcon },
+  { label: 'Cookies',   href: '/cookies',   icon: Cookie },
+  { label: 'M4nga',     href: '/m4nga',     icon: Sword },
+  { label: 'Lottery',   href: '/lottery',   icon: Ticket },
+  { label: 'Ddergo',    href: '/ddergo',    icon: Music },
+  { label: 'PFP',       href: '/pfp',       icon: User },
+  { label: 'Lore Lab',  href: '/lore-lab',  icon: BookOpen },
 ];
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
+  const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
+  const { openConnectModal } = useConnectModal();
 
   useEffect(() => {
     const handler = () => setIsScrolled(window.scrollY > 20);
@@ -61,12 +68,23 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
           <motion.div
-            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileHover={{ scale: 1.08, rotate: 3 }}
             className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#FF4D00]/60 group-hover:border-[#FF4D00] transition-all shadow-[0_0_15px_rgba(255,77,0,0.4)] flex-shrink-0"
           >
-            <div className="w-full h-full bg-gradient-to-br from-[#FF4D00] to-[#FF0000] flex items-center justify-center text-white text-sm font-bold">
-              中
-            </div>
+            {!imgError ? (
+              <Image
+                src="https://i.ibb.co/B8zQgxk/IMG-7857.jpg"
+                alt="Naka Go"
+                width={40}
+                height={40}
+                className="w-full h-full object-cover"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-[#FF4D00] to-[#FF0000] flex items-center justify-center text-white text-sm font-bold">
+                中
+              </div>
+            )}
           </motion.div>
           <div className="flex flex-col leading-none">
             <span
@@ -96,16 +114,19 @@ export default function Header() {
             </a>
           ))}
           <div className="w-px h-4 bg-white/20" />
-          {appLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-white/50 hover:text-[#FF4D00] transition-colors text-sm font-semibold tracking-wide flex items-center gap-1"
-            >
-              <span className="text-xs">{link.emoji}</span>
-              {link.label}
-            </Link>
-          ))}
+          {appLinks.map((link) => {
+            const Icon = link.icon;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-white/50 hover:text-[#FF4D00] transition-colors text-sm font-semibold tracking-wide flex items-center gap-1.5"
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Right side */}
@@ -140,17 +161,41 @@ export default function Header() {
             href={SOCIAL_LINKS.uniswap}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:flex items-center px-4 py-2 rounded-full text-white font-bold text-sm"
+            className="hidden sm:flex items-center px-3 py-1.5 rounded-full text-white font-bold text-xs"
             style={{
               background: 'linear-gradient(135deg, #FF4D00, #FF0000)',
-              boxShadow: '0 0 15px rgba(255,77,0,0.5)',
+              boxShadow: '0 0 12px rgba(255,77,0,0.4)',
               fontFamily: 'var(--font-permanent-marker)',
             }}
           >
             Buy $NAKA
           </motion.a>
 
-          <ConnectButton chainStatus="icon" showBalance={false} />
+          {/* Compact wallet button */}
+          {isConnected && address ? (
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => disconnect()}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black transition-all"
+              style={{ background: 'rgba(0,255,136,0.1)', border: '1px solid rgba(0,255,136,0.3)', color: '#00FF88', fontFamily: 'Bebas Neue, Impact, sans-serif', letterSpacing: '0.08em' }}
+              title="Click to disconnect"
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-[#00FF88]" style={{ animation: 'pulse 2s infinite' }} />
+              {address.slice(0, 4)}...{address.slice(-4)}
+            </motion.button>
+          ) : (
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={openConnectModal}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black transition-all"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)', fontFamily: 'Bebas Neue, Impact, sans-serif', letterSpacing: '0.08em' }}
+            >
+              <Wallet className="w-3 h-3" />
+              Connect
+            </motion.button>
+          )}
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -183,17 +228,20 @@ export default function Header() {
                 </a>
               ))}
               <p className="text-white/30 text-xs uppercase tracking-widest mt-4 mb-2">Tools</p>
-              {appLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="text-white/70 hover:text-[#FF4D00] transition-colors font-semibold py-2.5 border-b border-white/5 flex items-center gap-2"
-                >
-                  <span>{link.emoji}</span>
-                  {link.label}
-                </Link>
-              ))}
+              {appLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="text-white/70 hover:text-[#FF4D00] transition-colors font-semibold py-2.5 border-b border-white/5 flex items-center gap-2"
+                  >
+                    <Icon className="w-4 h-4 text-[#FF4D00]" />
+                    {link.label}
+                  </Link>
+                );
+              })}
               <div className="flex items-center gap-3 mt-4">
                 <a
                   href={SOCIAL_LINKS.telegram}
@@ -216,14 +264,29 @@ export default function Header() {
                 href={SOCIAL_LINKS.uniswap}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-3 text-center py-4 rounded-full text-white font-bold"
-                style={{
-                  background: 'linear-gradient(135deg, #FF4D00, #FF0000)',
-                  fontFamily: 'var(--font-permanent-marker)',
-                }}
+                className="mt-3 text-center py-3 rounded-full text-white font-bold text-sm"
+                style={{ background: 'linear-gradient(135deg, #FF4D00, #FF0000)', fontFamily: 'var(--font-permanent-marker)' }}
               >
                 Buy $NAKA
               </a>
+              {isConnected && address ? (
+                <button
+                  onClick={() => disconnect()}
+                  className="text-center py-3 rounded-full font-black text-sm"
+                  style={{ background: 'rgba(0,255,136,0.1)', border: '1px solid rgba(0,255,136,0.3)', color: '#00FF88', fontFamily: 'Bebas Neue, Impact, sans-serif' }}
+                >
+                  Connected: {address.slice(0, 6)}...{address.slice(-4)} (tap to disconnect)
+                </button>
+              ) : (
+                <button
+                  onClick={openConnectModal}
+                  className="text-center py-3 rounded-full font-black text-sm flex items-center justify-center gap-2"
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)', fontFamily: 'Bebas Neue, Impact, sans-serif' }}
+                >
+                  <Wallet className="w-4 h-4" />
+                  Connect Wallet
+                </button>
+              )}
             </div>
           </motion.div>
         )}

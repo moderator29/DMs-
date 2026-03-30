@@ -1,358 +1,429 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, type TargetAndTransition } from 'framer-motion';
+import Image from 'next/image';
+import { MASCOT_URL } from '@/lib/utils/constants';
 
-// ─── MOON STICKER ─────────────────────────────────────────────────────────────
+const M = MASCOT_URL;
+
+// ── Base sticker wrapper ─────────────────────────────────────────────────────
+function Sticker({
+  size, children, anim, hover,
+}: {
+  size: number;
+  children: React.ReactNode;
+  anim?: TargetAndTransition;
+  hover?: TargetAndTransition;
+}) {
+  return (
+    <motion.div
+      style={{ width: size, height: size, cursor: 'pointer', position: 'relative' }}
+      animate={anim}
+      whileHover={hover ?? { scale: 1.12, rotate: 3 }}
+      whileTap={{ scale: 0.94 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// ── NAKA GO IP! — mascot jumping on orange burst ──────────────────────────────
+export function NakaGoSticker({ size = 180 }: { size?: number }) {
+  return (
+    <Sticker
+      size={size}
+      anim={{ y: [0, -16, 0], rotate: [0, 2, -2, 0] }}
+      hover={{ scale: 1.15, rotate: 5, y: -8 }}
+    >
+      {/* Burst bg */}
+      <motion.div
+        className="absolute inset-0"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+      >
+        <svg viewBox="0 0 200 200" width={size} height={size} className="absolute inset-0">
+          <polygon points="100,5 120,70 185,70 133,110 154,175 100,138 46,175 67,110 15,70 80,70" fill="#FF4D00" opacity="0.85" />
+        </svg>
+      </motion.div>
+      {/* Glow */}
+      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(255,77,0,0.4), transparent 70%)' }} />
+      {/* Mascot */}
+      <div className="absolute inset-[10%] rounded-full overflow-hidden" style={{ border: '3px solid rgba(255,77,0,0.8)', boxShadow: '0 0 20px rgba(255,77,0,0.8)' }}>
+        <Image src={M} alt="Naka Go" fill className="object-cover" />
+      </div>
+      {/* Text */}
+      <div className="absolute bottom-0 left-0 right-0 text-center pb-1">
+        <span className="text-white font-black text-[11px] tracking-widest" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(255,77,0,1)', letterSpacing: '0.15em' }}>
+          NAKA GO IP!
+        </span>
+      </div>
+    </Sticker>
+  );
+}
+
+// ── NAKA MOON — mascot on golden moon circle ──────────────────────────────────
 export function MoonSticker({ size = 160 }: { size?: number }) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.15, rotate: 5 }}
-      animate={{ y: [0, -14, 0], rotate: [0, 2, -2, 0] }}
-      transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-      style={{ width: size, height: size, cursor: 'pointer' }}
+    <Sticker
+      size={size}
+      anim={{ y: [0, -14, 0] }}
+      hover={{ scale: 1.13, rotate: -4, y: -6 }}
     >
-      <svg viewBox="0 0 200 200" width={size} height={size}>
-        <defs>
-          <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#FFD700" stopOpacity="0.4"/>
-            <stop offset="100%" stopColor="#FFD700" stopOpacity="0"/>
-          </radialGradient>
-          <radialGradient id="moonFace" cx="45%" cy="40%" r="55%">
-            <stop offset="0%" stopColor="#FFF5C0"/>
-            <stop offset="100%" stopColor="#FFD700"/>
-          </radialGradient>
-        </defs>
-        <circle cx="100" cy="100" r="90" fill="url(#moonGlow)"/>
-        <circle cx="100" cy="100" r="70" fill="url(#moonFace)" stroke="#FFD700" strokeWidth="2"/>
-        <circle cx="75" cy="80" r="8" fill="#F0CC00" opacity="0.6"/>
-        <circle cx="125" cy="95" r="5" fill="#F0CC00" opacity="0.5"/>
-        <circle cx="90" cy="118" r="10" fill="#F0CC00" opacity="0.5"/>
-        <ellipse cx="82" cy="70" rx="10" ry="14" fill="#C8A000" transform="rotate(-15 82 70)"/>
-        <ellipse cx="82" cy="70" rx="6" ry="9" fill="#FF8C00" opacity="0.6" transform="rotate(-15 82 70)"/>
-        <ellipse cx="118" cy="70" rx="10" ry="14" fill="#C8A000" transform="rotate(15 118 70)"/>
-        <ellipse cx="118" cy="70" rx="6" ry="9" fill="#FF8C00" opacity="0.6" transform="rotate(15 118 70)"/>
-        <ellipse cx="100" cy="98" rx="28" ry="26" fill="#D4A800"/>
-        <ellipse cx="91" cy="94" rx="5" ry="6" fill="#1a1a1a"/>
-        <circle cx="93" cy="92" r="1.5" fill="white"/>
-        <ellipse cx="109" cy="94" rx="5" ry="6" fill="#1a1a1a"/>
-        <circle cx="111" cy="92" r="1.5" fill="white"/>
-        <ellipse cx="100" cy="105" rx="12" ry="9" fill="#C09000"/>
-        <ellipse cx="100" cy="102" rx="5" ry="3" fill="#FF6B35"/>
-        <ellipse cx="100" cy="103" rx="3" ry="2" fill="#1a1a1a"/>
-        <path d="M93 110 Q100 116 107 110" stroke="#1a1a1a" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-        <circle cx="83" cy="106" r="5" fill="#FF9090" opacity="0.7"/>
-        <circle cx="117" cy="106" r="5" fill="#FF9090" opacity="0.7"/>
-        {[0,45,90,135,180,225,270,315].map((deg, i) => (
-          <text
-            key={i}
-            x={100 + 85 * Math.cos((deg * Math.PI) / 180) - 4}
-            y={100 + 85 * Math.sin((deg * Math.PI) / 180) + 4}
-            fontSize="10"
-            fill="#FFD700"
-            opacity="0.7"
-          >★</text>
+      {/* Moon glow */}
+      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(255,215,0,0.3), transparent 70%)' }} />
+      {/* Moon circle */}
+      <div className="absolute inset-[5%] rounded-full" style={{ background: 'linear-gradient(135deg, #2a2000, #1a1400)', border: '3px solid #FFD700', boxShadow: '0 0 25px rgba(255,215,0,0.5), inset 0 0 20px rgba(255,215,0,0.1)' }}>
+        {/* Stars */}
+        {[[20,15],[75,10],[15,65],[80,55],[10,90]].map(([x,y],i) => (
+          <motion.div key={i} className="absolute w-1 h-1 rounded-full bg-yellow-300"
+            style={{ left: `${x}%`, top: `${y}%` }}
+            animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.2, 0.8] }}
+            transition={{ duration: 1.5 + i * 0.4, repeat: Infinity, delay: i * 0.3 }}
+          />
         ))}
-      </svg>
-    </motion.div>
+        <div className="absolute inset-[12%] rounded-full overflow-hidden">
+          <Image src={M} alt="Naka Go" fill className="object-cover" />
+        </div>
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 text-center">
+        <span className="text-[#FFD700] font-black text-[11px]" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(255,215,0,0.8)', letterSpacing: '0.15em' }}>
+          NAKA MOON
+        </span>
+      </div>
+    </Sticker>
   );
 }
 
-// ─── ROCKET STICKER ───────────────────────────────────────────────────────────
-export function RocketSticker({ size = 160 }: { size?: number }) {
+// ── HODL — mascot with golden crown ──────────────────────────────────────────
+export function HodlSticker({ size = 160 }: { size?: number }) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.2, rotate: -10 }}
-      animate={{ y: [0, -18, 0], rotate: [-5, 5, -5] }}
-      transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-      style={{ width: size, height: size, cursor: 'pointer' }}
+    <Sticker
+      size={size}
+      anim={{ y: [0, -10, 0], rotate: [0, -3, 3, 0] }}
+      hover={{ scale: 1.14, y: -8 }}
     >
-      <svg viewBox="0 0 200 200" width={size} height={size}>
-        <defs>
-          <linearGradient id="rocketBody" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#FF4D00"/>
-            <stop offset="100%" stopColor="#FF0000"/>
-          </linearGradient>
-          <linearGradient id="flame1" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#FFD700"/>
-            <stop offset="50%" stopColor="#FF4D00"/>
-            <stop offset="100%" stopColor="#FF000000"/>
-          </linearGradient>
-        </defs>
-        <ellipse cx="100" cy="155" rx="18" ry="28" fill="url(#flame1)" opacity="0.9"/>
-        <ellipse cx="100" cy="162" rx="10" ry="18" fill="#FFF" opacity="0.7"/>
-        <rect x="82" y="80" width="36" height="65" rx="18" fill="url(#rocketBody)"/>
-        <path d="M82 82 Q100 40 118 82 Z" fill="#FF4D00"/>
-        <circle cx="100" cy="102" r="14" fill="#001133" stroke="#ffffff30" strokeWidth="2"/>
-        <ellipse cx="100" cy="104" rx="10" ry="9" fill="#D4A800"/>
-        <ellipse cx="96" cy="100" rx="3" ry="3.5" fill="#1a1a1a"/>
-        <circle cx="97" cy="99" r="1" fill="white"/>
-        <ellipse cx="104" cy="100" rx="3" ry="3.5" fill="#1a1a1a"/>
-        <circle cx="105" cy="99" r="1" fill="white"/>
-        <ellipse cx="100" cy="107" rx="4" ry="3" fill="#C09000"/>
-        <ellipse cx="100" cy="105" rx="2" ry="1.5" fill="#FF6B35"/>
-        <circle cx="94" cy="107" r="2.5" fill="#FF9090" opacity="0.6"/>
-        <circle cx="106" cy="107" r="2.5" fill="#FF9090" opacity="0.6"/>
-        <path d="M82 130 L64 148 L82 142 Z" fill="#CC3300"/>
-        <path d="M118 130 L136 148 L118 142 Z" fill="#CC3300"/>
-        {[[30,40],[165,55],[25,110],[170,120]].map(([x,y], i) => (
-          <text key={i} x={x} y={y} fontSize={i % 2 === 0 ? "14" : "10"} fill="#FFD700" opacity="0.8">✦</text>
-        ))}
-        <text x="100" y="190" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#FFD700" fontFamily="sans-serif">TO THE MOON 🌕</text>
+      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,215,0,0.2), transparent 70%)' }} />
+      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #FFD700', boxShadow: '0 0 20px rgba(255,215,0,0.5)' }}>
+        <Image src={M} alt="Naka Go" fill className="object-cover" />
+      </div>
+      {/* Crown SVG */}
+      <svg className="absolute top-0 left-1/2 -translate-x-1/2" width={size * 0.55} height={size * 0.3} viewBox="0 0 100 50">
+        <polygon points="10,45 10,15 30,30 50,5 70,30 90,15 90,45" fill="#FFD700" stroke="#CC8800" strokeWidth="2" />
+        <circle cx="50" cy="5" r="5" fill="#FF4D00" />
+        <circle cx="10" cy="15" r="4" fill="#FF4D00" />
+        <circle cx="90" cy="15" r="4" fill="#FF4D00" />
+        <motion.path d="M50,5 L50,0" stroke="#FFD700" strokeWidth="1" strokeOpacity="0.6"
+          animate={{ strokeOpacity: [0.3, 1, 0.3] }} transition={{ duration: 1, repeat: Infinity }} />
       </svg>
-    </motion.div>
+      <div className="absolute bottom-0 left-0 right-0 text-center">
+        <span className="text-[#FFD700] font-black text-[12px]" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 10px rgba(255,215,0,0.9)', letterSpacing: '0.2em' }}>HODL</span>
+      </div>
+    </Sticker>
   );
 }
 
-// ─── COOKIE STICKER ───────────────────────────────────────────────────────────
-export function CookieSticker({ size = 160 }: { size?: number }) {
+// ── GM FRENS — green happy glow ───────────────────────────────────────────────
+export function GmFrensSticker({ size = 160 }: { size?: number }) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.2, rotate: -8 }}
-      animate={{ rotate: [0, 8, -8, 0], y: [0, -8, 0] }}
-      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-      style={{ width: size, height: size, cursor: 'pointer' }}
+    <Sticker
+      size={size}
+      anim={{ scale: [1, 1.04, 1], y: [0, -8, 0] }}
+      hover={{ scale: 1.15, rotate: -5 }}
     >
-      <svg viewBox="0 0 200 200" width={size} height={size}>
-        <defs>
-          <radialGradient id="cookieFill" cx="40%" cy="35%" r="60%">
-            <stop offset="0%" stopColor="#D4822A"/>
-            <stop offset="100%" stopColor="#A0521A"/>
-          </radialGradient>
-        </defs>
-        <circle cx="100" cy="98" r="72" fill="url(#cookieFill)"/>
-        <circle cx="152" cy="52" r="30" fill="#0a0a0a"/>
-        <circle cx="100" cy="98" r="72" fill="none" stroke="#8B4513" strokeWidth="3" opacity="0.4"/>
-        {[[80,75],[110,80],[90,105],[120,100],[70,115],[105,120],[135,85],[75,90],[115,130],[88,135]].map(([cx,cy], i) => (
-          <ellipse key={i} cx={cx} cy={cy} rx="7" ry="5" fill="#3B1C00" transform={`rotate(${i * 36} ${cx} ${cy})`}/>
-        ))}
-        <text x="95" y="102" textAnchor="middle" fontSize="16" fontWeight="900" fill="#FFD700" fontFamily="Impact, sans-serif">$NAKA</text>
-        {[[148,30],[168,45],[158,22],[175,35]].map(([x,y], i) => (
-          <text key={i} x={x} y={y} fontSize="12" fill="#FFD700" opacity="0.8">✦</text>
-        ))}
-        <text x="100" y="188" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#D4822A" fontFamily="sans-serif">🍪 PASS IT ON 🍪</text>
-      </svg>
-    </motion.div>
+      <motion.div
+        className="absolute inset-0 rounded-full"
+        animate={{ opacity: [0.3, 0.7, 0.3] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        style={{ background: 'radial-gradient(circle, rgba(0,255,136,0.25), transparent 70%)' }}
+      />
+      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #00FF88', boxShadow: '0 0 20px rgba(0,255,136,0.5)' }}>
+        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'hue-rotate(10deg) saturate(1.2)' }} />
+      </div>
+      {/* Sparkles */}
+      {[[10,20],[85,15],[5,75],[90,65],[50,5]].map(([x,y],i) => (
+        <motion.div key={i} className="absolute text-[10px]" style={{ left: `${x}%`, top: `${y}%` }}
+          animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5], rotate: [0, 180, 360] }}
+          transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
+        >✦</motion.div>
+      ))}
+      <div className="absolute bottom-0 left-0 right-0 text-center">
+        <span className="font-black text-[11px]" style={{ color: '#00FF88', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(0,255,136,0.9)', letterSpacing: '0.15em' }}>GM FRENS</span>
+      </div>
+    </Sticker>
   );
 }
 
-// ─── ICE CREAM STICKER ────────────────────────────────────────────────────────
-export function IceCreamSticker({ size = 160 }: { size?: number }) {
+// ── 中号 — imperial kanji badge ──────────────────────────────────────────────
+export function KanjiSticker({ size = 160 }: { size?: number }) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.2 }}
-      animate={{ y: [0, -12, 0], rotate: [0, 3, -3, 0] }}
-      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-      style={{ width: size, height: size, cursor: 'pointer' }}
+    <Sticker
+      size={size}
+      anim={{ y: [0, -12, 0] }}
+      hover={{ scale: 1.12, rotate: 2 }}
     >
-      <svg viewBox="0 0 200 220" width={size} height={size}>
-        <defs>
-          <linearGradient id="iceConeGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#D4822A"/>
-            <stop offset="100%" stopColor="#8B4513"/>
-          </linearGradient>
-          <radialGradient id="scoopGrad" cx="40%" cy="35%" r="60%">
-            <stop offset="0%" stopColor="#FFB3BA"/>
-            <stop offset="100%" stopColor="#FF6B7A"/>
-          </radialGradient>
-          <radialGradient id="scoop2Grad" cx="40%" cy="35%" r="60%">
-            <stop offset="0%" stopColor="#B5E8B0"/>
-            <stop offset="100%" stopColor="#5ABF50"/>
-          </radialGradient>
-        </defs>
-        <path d="M70 130 L100 195 L130 130 Z" fill="url(#iceConeGrad)"/>
-        <line x1="100" y1="130" x2="85" y2="175" stroke="#8B4513" strokeWidth="1.5" opacity="0.5"/>
-        <line x1="100" y1="130" x2="115" y2="175" stroke="#8B4513" strokeWidth="1.5" opacity="0.5"/>
-        <ellipse cx="100" cy="118" rx="32" ry="30" fill="url(#scoopGrad)"/>
-        <ellipse cx="100" cy="88" rx="28" ry="27" fill="url(#scoop2Grad)"/>
-        {[[85,105],[110,108],[95,115],[115,100],[82,98]].map(([x,y], i) => (
-          <rect key={i} x={x} y={y} width="8" height="3" rx="1.5" fill={['#FF4D00','#FFD700','#00FFCC','#FF88FF','#88FFFF'][i]} transform={`rotate(${i*35 - 20} ${x+4} ${y+1.5})`}/>
-        ))}
-        <circle cx="100" cy="62" r="10" fill="#CC0000"/>
-        <path d="M100 62 Q108 45 115 40" stroke="#228B22" strokeWidth="2" fill="none" strokeLinecap="round"/>
-        <ellipse cx="115" cy="39" rx="5" ry="3" fill="#228B22"/>
-        <text x="100" y="215" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#FF6B7A" fontFamily="sans-serif">🍦 SWEET GAINS 🍦</text>
-      </svg>
-    </motion.div>
+      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,77,0,0.15), transparent 70%)' }} />
+      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid rgba(255,77,0,0.7)' }}>
+        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'sepia(20%)' }} />
+        {/* Overlay kanji */}
+        <div className="absolute inset-0 flex items-end justify-center pb-2">
+          <span className="text-2xl font-black text-[#FFD700]" style={{ textShadow: '0 0 15px rgba(255,215,0,0.8)', fontFamily: 'var(--font-noto-sans-jp)' }}>中号</span>
+        </div>
+      </div>
+      {/* Corner decorations */}
+      {[[4,4],[88,4],[4,88],[88,88]].map(([x,y],i) => (
+        <motion.div key={i} className="absolute w-3 h-3 rounded-full bg-[#FFD700] opacity-60"
+          style={{ left: `${x}%`, top: `${y}%` }}
+          animate={{ opacity: [0.3, 0.8, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
+        />
+      ))}
+    </Sticker>
   );
 }
 
-// ─── FIRE STICKER ─────────────────────────────────────────────────────────────
-export function FireSticker({ size = 160 }: { size?: number }) {
+// ── WAGMI — rainbow glow ──────────────────────────────────────────────────────
+export function WagmiSticker({ size = 160 }: { size?: number }) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.2 }}
-      animate={{ scale: [1, 1.05, 1] }}
-      transition={{ duration: 0.6, repeat: Infinity }}
-      style={{ width: size, height: size, cursor: 'pointer' }}
+    <Sticker
+      size={size}
+      anim={{ rotate: [0, 3, -3, 0], y: [0, -8, 0] }}
+      hover={{ scale: 1.15, rotate: 8 }}
     >
-      <svg viewBox="0 0 200 220" width={size} height={size}>
-        <defs>
-          <radialGradient id="fireCore" cx="50%" cy="80%" r="50%">
-            <stop offset="0%" stopColor="#FFF700"/>
-            <stop offset="40%" stopColor="#FF4D00"/>
-            <stop offset="100%" stopColor="#FF0000"/>
-          </radialGradient>
-        </defs>
-        <path d="M100 30 Q130 60 140 90 Q155 130 140 155 Q125 180 100 185 Q75 180 60 155 Q45 130 60 90 Q70 60 100 30" fill="url(#fireCore)"/>
-        <path d="M100 65 Q115 85 122 110 Q128 135 115 152 Q108 162 100 163 Q92 162 85 152 Q72 135 78 110 Q85 85 100 65" fill="#FFD700"/>
-        <ellipse cx="100" cy="140" rx="12" ry="16" fill="white" opacity="0.85"/>
-        <ellipse cx="91" cy="128" rx="5" ry="6" fill="#1a0000"/>
-        <ellipse cx="109" cy="128" rx="5" ry="6" fill="#1a0000"/>
-        <circle cx="92.5" cy="126.5" r="1.5" fill="white"/>
-        <circle cx="110.5" cy="126.5" r="1.5" fill="white"/>
-        <path d="M93 138 Q100 143 107 138" stroke="#1a0000" strokeWidth="1.5" fill="none"/>
-        <text x="100" y="210" textAnchor="middle" fontSize="14" fontWeight="900" fill="#FF4D00" fontFamily="Impact, sans-serif">FIRE 🔥</text>
-      </svg>
-    </motion.div>
+      <motion.div
+        className="absolute inset-0 rounded-full"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+        style={{ background: 'conic-gradient(#FF4D00, #FFD700, #00FF88, #5B8EFF, #CC44FF, #FF4D00)', borderRadius: '50%' }}
+      />
+      <div className="absolute inset-[4%] rounded-full overflow-hidden bg-[#0a0a0a]">
+        <div className="absolute inset-[8%] rounded-full overflow-hidden">
+          <Image src={M} alt="Naka Go" fill className="object-cover" />
+        </div>
+      </div>
+      <div className="absolute bottom-1 left-0 right-0 text-center">
+        <span className="font-black text-[11px] text-white" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', letterSpacing: '0.15em', textShadow: '0 0 8px rgba(255,255,255,0.8)' }}>WAGMI</span>
+      </div>
+    </Sticker>
   );
 }
 
-// ─── NAKA GO MAIN STICKER ─────────────────────────────────────────────────────
-export function NakaGoSticker({ size = 200 }: { size?: number }) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.12, rotate: 3 }}
-      animate={{ y: [0, -16, 0] }}
-      transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-      style={{ width: size, height: size, cursor: 'pointer' }}
-    >
-      <svg viewBox="0 0 240 260" width={size} height={size}>
-        <defs>
-          <radialGradient id="nakaGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#FF4D00" stopOpacity="0.4"/>
-            <stop offset="100%" stopColor="#FF4D00" stopOpacity="0"/>
-          </radialGradient>
-          <radialGradient id="nakaBody" cx="45%" cy="35%" r="60%">
-            <stop offset="0%" stopColor="#D4A800"/>
-            <stop offset="100%" stopColor="#A07800"/>
-          </radialGradient>
-          <radialGradient id="medalGrad" cx="40%" cy="35%" r="60%">
-            <stop offset="0%" stopColor="#FFE066"/>
-            <stop offset="100%" stopColor="#CC8800"/>
-          </radialGradient>
-        </defs>
-        <circle cx="120" cy="120" r="110" fill="url(#nakaGlow)"/>
-        <ellipse cx="120" cy="175" rx="50" ry="35" fill="#A07800" opacity="0.6"/>
-        <path d="M160 150 Q195 125 185 105 Q175 90 165 105 Q160 120 160 150" fill="#D4A800"/>
-        <ellipse cx="90" cy="75" rx="18" ry="26" fill="#B88C00" transform="rotate(-10 90 75)"/>
-        <ellipse cx="90" cy="75" rx="10" ry="16" fill="#FF8C00" opacity="0.7" transform="rotate(-10 90 75)"/>
-        <ellipse cx="150" cy="75" rx="18" ry="26" fill="#B88C00" transform="rotate(10 150 75)"/>
-        <ellipse cx="150" cy="75" rx="10" ry="16" fill="#FF8C00" opacity="0.7" transform="rotate(10 150 75)"/>
-        <ellipse cx="120" cy="115" rx="46" ry="44" fill="url(#nakaBody)"/>
-        <ellipse cx="120" cy="125" rx="28" ry="22" fill="#C8A800" opacity="0.8"/>
-        <ellipse cx="106" cy="108" rx="8" ry="9" fill="#1a1a1a"/>
-        <circle cx="109" cy="105.5" r="2.5" fill="white"/>
-        <ellipse cx="134" cy="108" rx="8" ry="9" fill="#1a1a1a"/>
-        <circle cx="137" cy="105.5" r="2.5" fill="white"/>
-        <ellipse cx="120" cy="122" rx="18" ry="13" fill="#B89800"/>
-        <ellipse cx="120" cy="118" rx="8" ry="5" fill="#FF6B35"/>
-        <ellipse cx="120" cy="119" rx="5" ry="3.5" fill="#1a1a1a"/>
-        <path d="M109 128 Q120 137 131 128" stroke="#1a1a1a" strokeWidth="2" fill="none" strokeLinecap="round"/>
-        <circle cx="96" cy="120" r="8" fill="#FF9090" opacity="0.6"/>
-        <circle cx="144" cy="120" r="8" fill="#FF9090" opacity="0.6"/>
-        <ellipse cx="88" cy="165" rx="18" ry="14" fill="#C8A800"/>
-        <ellipse cx="152" cy="165" rx="18" ry="14" fill="#C8A800"/>
-        <circle cx="120" cy="148" r="14" fill="url(#medalGrad)" stroke="#CC8800" strokeWidth="1.5"/>
-        <text x="120" y="153" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#8B5E00" fontFamily="sans-serif">中</text>
-        <path d="M112 135 L116 148 M128 135 L124 148" stroke="#FF4D00" strokeWidth="3" strokeLinecap="round"/>
-        <text x="120" y="222" textAnchor="middle" fontSize="22" fontWeight="900" fill="#FF4D00" fontFamily="Impact, sans-serif">NAKA GO</text>
-        <text x="120" y="240" textAnchor="middle" fontSize="14" fill="#FFD700" fontFamily="sans-serif">中号</text>
-      </svg>
-    </motion.div>
-  );
-}
-
-// ─── DIAMOND HANDS STICKER ────────────────────────────────────────────────────
+// ── DIAMOND HANDS ─────────────────────────────────────────────────────────────
 export function DiamondHandsSticker({ size = 160 }: { size?: number }) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.2 }}
-      animate={{ y: [0, -12, 0], rotate: [0, -3, 3, 0] }}
-      transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-      style={{ width: size, height: size, cursor: 'pointer' }}
+    <Sticker
+      size={size}
+      anim={{ y: [0, -12, 0], rotate: [0, -3, 3, 0] }}
+      hover={{ scale: 1.14, rotate: -6 }}
     >
-      <svg viewBox="0 0 200 200" width={size} height={size}>
-        <defs>
-          <linearGradient id="diamondGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#A8EDFF"/>
-            <stop offset="30%" stopColor="#5BC8FF"/>
-            <stop offset="60%" stopColor="#0099FF"/>
-            <stop offset="100%" stopColor="#0055CC"/>
-          </linearGradient>
-        </defs>
-        <circle cx="100" cy="90" r="55" fill="none" stroke="#5BC8FF" strokeWidth="3" opacity="0.3"/>
-        <polygon points="100,35 145,80 100,140 55,80" fill="url(#diamondGrad)" stroke="#A8EDFF" strokeWidth="1.5"/>
-        <polygon points="100,35 145,80 100,80" fill="#5BC8FF" opacity="0.5"/>
-        <polygon points="100,35 55,80 100,80" fill="#A8EDFF" opacity="0.4"/>
-        <polygon points="100,140 145,80 100,80" fill="#0055CC" opacity="0.6"/>
-        <polygon points="100,140 55,80 100,80" fill="#0077EE" opacity="0.5"/>
-        <polygon points="100,35 120,65 100,80 80,65" fill="white" opacity="0.4"/>
-        {[[100,20],[150,60],[50,60],[100,155],[160,90],[40,90]].map(([x,y], i) => (
-          <text key={i} x={x-5} y={y} fontSize={i % 3 === 0 ? "14" : "10"} fill="#A8EDFF" opacity="0.8">✦</text>
-        ))}
-        <ellipse cx="75" cy="145" rx="22" ry="18" fill="#D4A800" transform="rotate(-15 75 145)"/>
-        <ellipse cx="125" cy="145" rx="22" ry="18" fill="#D4A800" transform="rotate(15 125 145)"/>
-        <text x="100" y="185" textAnchor="middle" fontSize="20" fontWeight="900" fill="#5BC8FF" fontFamily="Impact, sans-serif">HODL 💎</text>
+      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(91,142,255,0.2), transparent 70%)' }} />
+      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #5B8EFF', boxShadow: '0 0 20px rgba(91,142,255,0.5)' }}>
+        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'saturate(0.9) brightness(1.05)' }} />
+      </div>
+      {/* Diamond SVG corner */}
+      <svg className="absolute top-1 right-1" width={size * 0.22} height={size * 0.22} viewBox="0 0 40 40">
+        <polygon points="20,2 35,18 20,38 5,18" fill="#A8EDFF" stroke="#5B8EFF" strokeWidth="1.5" />
+        <polygon points="20,2 35,18 20,18 5,18" fill="white" opacity="0.3" />
       </svg>
-    </motion.div>
+      <div className="absolute bottom-0 left-0 right-0 text-center">
+        <span className="font-black text-[11px]" style={{ color: '#5B8EFF', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(91,142,255,0.9)', letterSpacing: '0.15em' }}>DIAMOND HANDS</span>
+      </div>
+    </Sticker>
   );
 }
 
-// ─── KIMONO STICKER ───────────────────────────────────────────────────────────
-export function KimonoSticker({ size = 200 }: { size?: number }) {
+// ── TO THE MOON — rocket trail ────────────────────────────────────────────────
+export function RocketSticker({ size = 160 }: { size?: number }) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.1 }}
-      animate={{ y: [0, -12, 0], rotate: [0, 1, -1, 0] }}
-      transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
-      style={{ width: size, height: size, cursor: 'pointer' }}
+    <Sticker
+      size={size}
+      anim={{ y: [0, -20, 0], rotate: [-4, 4, -4] }}
+      hover={{ scale: 1.18, rotate: -10, y: -12 }}
     >
-      <svg viewBox="0 0 220 260" width={size} height={size}>
-        <defs>
-          <linearGradient id="kimonoRed" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#CC0000"/>
-            <stop offset="100%" stopColor="#880000"/>
-          </linearGradient>
-          <radialGradient id="kimonoHead" cx="45%" cy="35%" r="60%">
-            <stop offset="0%" stopColor="#D4A800"/>
-            <stop offset="100%" stopColor="#A07800"/>
-          </radialGradient>
-        </defs>
-        <path d="M55 160 Q50 200 55 240 L165 240 Q170 200 165 160 Q155 145 140 140 L110 150 L80 140 Q65 145 55 160 Z" fill="url(#kimonoRed)"/>
-        {[[70,175],[100,170],[130,175],[85,195],[115,195],[70,215],[100,210],[130,215]].map(([x,y], i) => (
-          <text key={i} x={x} y={y} fontSize="12" fill="#FFD700" opacity="0.4" fontFamily="sans-serif">✿</text>
-        ))}
-        <path d="M90 140 L110 155 L130 140" stroke="#FFD700" strokeWidth="3" fill="none"/>
-        <rect x="58" y="188" width="104" height="18" rx="4" fill="#FFD700" opacity="0.8"/>
-        <text x="110" y="201" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#CC0000" fontFamily="sans-serif">中号</text>
-        <path d="M55 160 Q30 165 25 185 Q30 200 50 195 Q55 180 65 175 Z" fill="url(#kimonoRed)"/>
-        <path d="M165 160 Q190 165 195 185 Q190 200 170 195 Q165 180 155 175 Z" fill="url(#kimonoRed)"/>
-        <ellipse cx="35" cy="192" rx="14" ry="11" fill="#C8A800"/>
-        <ellipse cx="185" cy="192" rx="14" ry="11" fill="#C8A800"/>
-        <rect x="100" y="127" width="20" height="15" rx="5" fill="#C8A800"/>
-        <ellipse cx="110" cy="110" rx="42" ry="40" fill="url(#kimonoHead)"/>
-        <ellipse cx="82" cy="80" rx="16" ry="22" fill="#A07800" transform="rotate(-12 82 80)"/>
-        <ellipse cx="82" cy="80" rx="9" ry="14" fill="#FF8C00" opacity="0.6" transform="rotate(-12 82 80)"/>
-        <ellipse cx="138" cy="80" rx="16" ry="22" fill="#A07800" transform="rotate(12 138 80)"/>
-        <ellipse cx="138" cy="80" rx="9" ry="14" fill="#FF8C00" opacity="0.6" transform="rotate(12 138 80)"/>
-        <ellipse cx="110" cy="120" rx="26" ry="20" fill="#C09800"/>
-        <ellipse cx="98" cy="105" rx="7" ry="8" fill="#1a1a1a"/>
-        <circle cx="100.5" cy="103" r="2" fill="white"/>
-        <ellipse cx="122" cy="105" rx="7" ry="8" fill="#1a1a1a"/>
-        <circle cx="124.5" cy="103" r="2" fill="white"/>
-        <ellipse cx="110" cy="116" rx="7" ry="5" fill="#FF6B35"/>
-        <ellipse cx="110" cy="117" rx="4" ry="3" fill="#1a1a1a"/>
-        <path d="M101 124 Q110 130 119 124" stroke="#1a1a1a" strokeWidth="2" fill="none" strokeLinecap="round"/>
-        <circle cx="89" cy="116" r="7" fill="#FF9090" opacity="0.6"/>
-        <circle cx="131" cy="116" r="7" fill="#FF9090" opacity="0.6"/>
-        <ellipse cx="110" cy="73" rx="52" ry="12" fill="#D4A800" stroke="#B88C00" strokeWidth="1.5"/>
-        <path d="M75 73 Q90 52 110 48 Q130 52 145 73" fill="#C8A000" stroke="#B88C00" strokeWidth="1.5"/>
-        <circle cx="110" cy="50" r="4" fill="#FF4D00"/>
-        {[[20,80],[195,75],[15,145],[200,150]].map(([x,y], i) => (
-          <text key={i} x={x} y={y} fontSize="14" fill="#FFD700" opacity="0.7">✦</text>
-        ))}
-        <text x="110" y="258" textAnchor="middle" fontSize="14" fontWeight="900" fill="#FF4D00" fontFamily="Impact, sans-serif">BORN 1948</text>
-      </svg>
-    </motion.div>
+      {/* Rocket trail */}
+      <motion.div
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 rounded-full"
+        style={{ background: 'linear-gradient(to top, transparent, #FF4D00, #FFD700)', height: size * 0.35, opacity: 0.7 }}
+        animate={{ scaleY: [0.8, 1.2, 0.8], opacity: [0.5, 0.9, 0.5] }}
+        transition={{ duration: 0.6, repeat: Infinity }}
+      />
+      <div className="absolute inset-[10%] rounded-full overflow-hidden" style={{ border: '3px solid rgba(255,77,0,0.7)', boxShadow: '0 0 20px rgba(255,77,0,0.5)' }}>
+        <Image src={M} alt="Naka Go" fill className="object-cover" />
+      </div>
+      <div className="absolute top-1 left-0 right-0 text-center">
+        <span className="font-black text-[10px]" style={{ color: '#FFD700', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(255,215,0,1)', letterSpacing: '0.12em' }}>TO THE MOON</span>
+      </div>
+    </Sticker>
+  );
+}
+
+// ── THE CULT — purple dark vibes ──────────────────────────────────────────────
+export function CultSticker({ size = 160 }: { size?: number }) {
+  return (
+    <Sticker
+      size={size}
+      anim={{ scale: [1, 1.03, 1] }}
+      hover={{ scale: 1.13, rotate: -4 }}
+    >
+      <motion.div
+        className="absolute inset-0 rounded-full"
+        animate={{ opacity: [0.3, 0.7, 0.3] }}
+        transition={{ duration: 2.5, repeat: Infinity }}
+        style={{ background: 'radial-gradient(circle, rgba(204,68,255,0.3), transparent 70%)' }}
+      />
+      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #CC44FF', boxShadow: '0 0 25px rgba(204,68,255,0.6)' }}>
+        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'hue-rotate(200deg) saturate(0.8) brightness(0.9)' }} />
+      </div>
+      {/* Orbiting dot */}
+      <motion.div
+        className="absolute w-3 h-3 rounded-full bg-[#CC44FF]"
+        style={{ top: '8%', left: '50%', transformOrigin: `0 ${size * 0.42}px` }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+      />
+      <div className="absolute bottom-0 left-0 right-0 text-center">
+        <span className="font-black text-[11px]" style={{ color: '#CC44FF', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(204,68,255,0.9)', letterSpacing: '0.15em' }}>THE CULT</span>
+      </div>
+    </Sticker>
+  );
+}
+
+// ── BORN 1948 — vintage sepia ─────────────────────────────────────────────────
+export function KimonoSticker({ size = 160 }: { size?: number }) {
+  return (
+    <Sticker
+      size={size}
+      anim={{ y: [0, -10, 0] }}
+      hover={{ scale: 1.12, rotate: 3 }}
+    >
+      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,77,0,0.12), transparent 70%)' }} />
+      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid rgba(212,168,0,0.8)', boxShadow: '0 0 15px rgba(212,168,0,0.4)' }}>
+        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'sepia(40%) saturate(1.3) brightness(0.95)' }} />
+      </div>
+      {/* Red seal-stamp overlay */}
+      <div className="absolute bottom-[18%] right-[10%] w-8 h-8 rounded flex items-center justify-center"
+        style={{ background: 'rgba(180,0,0,0.85)', border: '1px solid rgba(255,100,100,0.5)', rotate: '12deg' }}
+      >
+        <span className="text-white text-[8px] font-black" style={{ fontFamily: 'var(--font-noto-sans-jp)' }}>中</span>
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 text-center">
+        <span className="font-black text-[11px]" style={{ color: '#D4A800', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(212,168,0,0.8)', letterSpacing: '0.15em' }}>BORN 1948</span>
+      </div>
+    </Sticker>
+  );
+}
+
+// ── BASED — cool blue cyber ───────────────────────────────────────────────────
+export function BasedSticker({ size = 160 }: { size?: number }) {
+  return (
+    <Sticker
+      size={size}
+      anim={{ y: [0, -8, 0], rotate: [0, 2, -2, 0] }}
+      hover={{ scale: 1.13, rotate: 5 }}
+    >
+      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(0,255,255,0.15), transparent 70%)' }} />
+      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #00FFFF', boxShadow: '0 0 20px rgba(0,255,255,0.4)' }}>
+        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'saturate(0.7) hue-rotate(180deg) brightness(1.1)' }} />
+      </div>
+      {/* Scan line effect */}
+      <motion.div
+        className="absolute inset-[8%] rounded-full pointer-events-none overflow-hidden"
+        style={{ border: '3px solid transparent' }}
+      >
+        <motion.div
+          className="absolute left-0 right-0 h-[2px] bg-[#00FFFF] opacity-30"
+          animate={{ top: ['0%', '100%'] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+        />
+      </motion.div>
+      <div className="absolute bottom-0 left-0 right-0 text-center">
+        <span className="font-black text-[12px]" style={{ color: '#00FFFF', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(0,255,255,0.9)', letterSpacing: '0.2em' }}>BASED</span>
+      </div>
+    </Sticker>
+  );
+}
+
+// ── FIRE — on fire pulse ──────────────────────────────────────────────────────
+export function FireSticker({ size = 160 }: { size?: number }) {
+  return (
+    <Sticker
+      size={size}
+      anim={{ scale: [1, 1.05, 1] }}
+      hover={{ scale: 1.16, y: -6 }}
+    >
+      <motion.div
+        className="absolute inset-0 rounded-full"
+        animate={{ opacity: [0.4, 0.9, 0.4] }}
+        transition={{ duration: 0.8, repeat: Infinity }}
+        style={{ background: 'radial-gradient(circle, rgba(255,77,0,0.5), transparent 70%)' }}
+      />
+      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #FF4D00', boxShadow: '0 0 30px rgba(255,77,0,0.8)' }}>
+        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'saturate(1.5) brightness(1.1)' }} />
+      </div>
+      {/* Flame particles */}
+      {[20, 50, 80].map((x, i) => (
+        <motion.div
+          key={i}
+          className="absolute bottom-[10%] text-base"
+          style={{ left: `${x}%` }}
+          animate={{ y: [0, -20, 0], opacity: [0.8, 0, 0.8], scale: [0.8, 1.3, 0.8] }}
+          transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.4 }}
+        >🔥</motion.div>
+      ))}
+      <div className="absolute top-1 left-0 right-0 text-center">
+        <span className="font-black text-[12px]" style={{ color: '#FF4D00', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 10px #FF4D00', letterSpacing: '0.2em' }}>ON FIRE</span>
+      </div>
+    </Sticker>
+  );
+}
+
+// ── ICE CREAM / COOKIES sticker ───────────────────────────────────────────────
+export function CookieSticker({ size = 160 }: { size?: number }) {
+  return (
+    <Sticker
+      size={size}
+      anim={{ rotate: [0, 6, -6, 0], y: [0, -8, 0] }}
+      hover={{ scale: 1.13, rotate: -8 }}
+    >
+      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(212,130,42,0.2), transparent 70%)' }} />
+      <div className="absolute inset-[8%] rounded-full overflow-hidden" style={{ border: '3px solid #D4822A', boxShadow: '0 0 15px rgba(212,130,42,0.5)' }}>
+        <Image src={M} alt="Naka Go" fill className="object-cover" style={{ filter: 'sepia(30%) saturate(1.4) hue-rotate(-10deg)' }} />
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 text-center">
+        <span className="font-black text-[10px]" style={{ color: '#D4822A', fontFamily: 'Bebas Neue, Impact, sans-serif', textShadow: '0 0 8px rgba(212,130,42,0.8)', letterSpacing: '0.12em' }}>COOKIES & CREAM</span>
+      </div>
+    </Sticker>
+  );
+}
+
+// ── IceCreamSticker alias ─────────────────────────────────────────────────────
+export function IceCreamSticker({ size = 160 }: { size?: number }) {
+  return <GmFrensSticker size={size} />;
+}
+
+// ── NakaGoIPSticker — extra "IP" variant ─────────────────────────────────────
+export function NakaGoIPSticker({ size = 180 }: { size?: number }) {
+  return (
+    <Sticker
+      size={size}
+      anim={{ y: [0, -18, 0], scale: [1, 1.03, 1] }}
+      hover={{ scale: 1.18, rotate: 6, y: -10 }}
+    >
+      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,77,0,0.3), transparent 65%)' }} />
+      <div className="absolute inset-[6%] rounded-full overflow-hidden" style={{ border: '4px solid #FF4D00', boxShadow: '0 0 30px rgba(255,77,0,0.7)' }}>
+        <Image src={M} alt="Naka Go" fill className="object-cover" />
+      </div>
+      {/* Animated ring */}
+      <motion.div
+        className="absolute inset-[3%] rounded-full"
+        style={{ border: '2px dashed rgba(255,77,0,0.5)' }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+      />
+      <div className="absolute -bottom-1 left-0 right-0 text-center">
+        <div className="inline-block px-3 py-0.5 rounded-full" style={{ background: 'linear-gradient(135deg, #FF4D00, #FF0000)', boxShadow: '0 0 12px rgba(255,77,0,0.7)' }}>
+          <span className="font-black text-white text-[11px]" style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', letterSpacing: '0.2em' }}>NAKA GO IP!</span>
+        </div>
+      </div>
+    </Sticker>
   );
 }
