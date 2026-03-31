@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, type TargetAndTransition } from 'framer-motion';
 
 // ── Cartoon Shiba Inu SVG sticker components ──────────────────────────────────
 // Each is a transparent-bg SVG with drop-shadow white outline for sticker effect.
@@ -109,7 +109,7 @@ function StickerWrap({
   children,
 }: {
   delay?: number;
-  anim?: object;
+  anim?: TargetAndTransition;
   children: React.ReactNode;
 }) {
   return (
