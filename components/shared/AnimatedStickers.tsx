@@ -2,112 +2,176 @@
 
 import { motion, type TargetAndTransition } from 'framer-motion';
 
-// ── Cartoon Shiba Inu SVG sticker components ──────────────────────────────────
-// Each is a transparent-bg SVG with drop-shadow white outline for sticker effect.
+// ─────────────────────────────────────────────────────────────────────────────
+// Cartoon Shiba Inu sticker components
+// Technique: paint-order="stroke fill" creates a solid white border around shapes
+// without doubling geometry. drop-shadow adds sticker depth.
+// ─────────────────────────────────────────────────────────────────────────────
 
-type Expression = 'happy' | 'big-smile' | 'o-mouth' | 'smug' | 'sad' | 'laser' | 'dollar' | 'stars';
+// Pre-computed sun-ray endpoints (no Math.cos/sin in render)
+// Circle r=18 centred at (60,14) — angles 0°,40°,80°,120°,160°,200°,240°,280°,320°
+const SUN_RAYS = [
+  { x2: 78.0,  y2: 14.0  },
+  { x2: 73.8,  y2: 25.6  },
+  { x2: 63.1,  y2: 31.8  },
+  { x2: 51.0,  y2: 29.4  },
+  { x2: 43.2,  y2: 20.2  },
+  { x2: 42.0,  y2: 8.6   },
+  { x2: 47.5,  y2: -1.8  },
+  { x2: 59.0,  y2: -3.8  },
+  { x2: 69.6,  y2: 2.2   },
+];
 
-// ── Base Shiba face (reusable SVG group) ──────────────────────────────────────
-function ShibaFace({ expression = 'happy' }: { expression?: Expression }) {
+// ─── Reusable SVG shapes ───────────────────────────────────────────────────────
+
+// Head shape — bezier-curve rounded head for organic look
+const HEAD = 'M60,20 C34,20 16,36 14,62 C12,82 22,100 40,110 C48,114 54,116 60,116 C66,116 72,114 80,110 C98,100 108,82 106,62 C104,36 86,20 60,20Z';
+
+// Left/right ear paths
+const EAR_L = 'M24,56 L10,12 L44,44Z';
+const EAR_L_INNER = 'M26,52 L16,20 L40,44Z';
+const EAR_R = 'M96,56 L110,12 L76,44Z';
+const EAR_R_INNER = 'M94,52 L104,20 L80,44Z';
+
+// Muzzle area
+const MUZZLE = 'M60,118'; // using ellipse instead
+
+// Shared paint props for white outline
+const OUTLINE = { stroke: 'white', strokeWidth: 7, paintOrder: 'stroke fill' } as const;
+const THIN_OUTLINE = { stroke: 'white', strokeWidth: 4, paintOrder: 'stroke fill' } as const;
+
+// ─── Expression: Eyes ──────────────────────────────────────────────────────────
+function NormalEyes() {
   return (
-    <g>
-      {/* Left ear — outer/back layer */}
-      <polygon points="22,5 4,48 42,50" fill="#D67A18" />
-      {/* Left ear — main orange */}
-      <polygon points="22,8 8,46 40,48" fill="#F5A035" />
-      {/* Left ear — pink inner */}
-      <polygon points="22,16 14,43 36,46" fill="#FFB8B8" />
-
-      {/* Right ear — outer/back */}
-      <polygon points="98,5 116,48 78,50" fill="#D67A18" />
-      {/* Right ear — main orange */}
-      <polygon points="98,8 112,46 80,48" fill="#F5A035" />
-      {/* Right ear — pink inner */}
-      <polygon points="98,16 106,43 84,46" fill="#FFB8B8" />
-
-      {/* Head outline (slightly larger, darker) */}
-      <ellipse cx="60" cy="73" rx="52" ry="49" fill="#D67A18" />
-      {/* Head main fill */}
-      <ellipse cx="60" cy="71" rx="50" ry="47" fill="#F5A035" />
-      {/* Forehead lighter patch */}
-      <ellipse cx="60" cy="50" rx="22" ry="16" fill="#F8B84A" />
-
-      {/* White muzzle */}
-      <ellipse cx="60" cy="86" rx="25" ry="18" fill="#FFF3E0" />
-
-      {/* Eyes */}
-      {expression === 'laser' ? (
-        <>
-          <ellipse cx="43" cy="67" rx="10" ry="10" fill="#AA0000" />
-          <ellipse cx="77" cy="67" rx="10" ry="10" fill="#AA0000" />
-          <ellipse cx="44" cy="64" rx="3.5" ry="3.5" fill="#FF4D00" />
-          <ellipse cx="78" cy="64" rx="3.5" ry="3.5" fill="#FF4D00" />
-        </>
-      ) : expression === 'dollar' ? (
-        <>
-          <ellipse cx="43" cy="67" rx="10" ry="10" fill="#1A0900" />
-          <ellipse cx="77" cy="67" rx="10" ry="10" fill="#1A0900" />
-          <text x="43" y="72" textAnchor="middle" fill="#FFD700" fontSize="11" fontWeight="bold" fontFamily="Arial, sans-serif">$</text>
-          <text x="77" y="72" textAnchor="middle" fill="#FFD700" fontSize="11" fontWeight="bold" fontFamily="Arial, sans-serif">$</text>
-        </>
-      ) : expression === 'stars' ? (
-        <>
-          <ellipse cx="43" cy="67" rx="10" ry="10" fill="#1A0900" />
-          <ellipse cx="77" cy="67" rx="10" ry="10" fill="#1A0900" />
-          <text x="43" y="72" textAnchor="middle" fill="#FFD700" fontSize="12" fontFamily="Arial, sans-serif">★</text>
-          <text x="77" y="72" textAnchor="middle" fill="#FFD700" fontSize="12" fontFamily="Arial, sans-serif">★</text>
-        </>
-      ) : (
-        <>
-          <ellipse cx="43" cy="67" rx="10" ry="10" fill="#1A0900" />
-          <ellipse cx="77" cy="67" rx="10" ry="10" fill="#1A0900" />
-          {/* Eye shine */}
-          <ellipse cx="45" cy="63" rx="3.5" ry="3.5" fill="white" />
-          <ellipse cx="79" cy="63" rx="3.5" ry="3.5" fill="white" />
-        </>
-      )}
-
-      {/* Nose */}
-      <ellipse cx="60" cy="80" rx="5.5" ry="4" fill="#1A0900" />
-
-      {/* Blush cheeks */}
-      <ellipse cx="27" cy="78" rx="11" ry="8" fill="rgba(255,110,100,0.38)" />
-      <ellipse cx="93" cy="78" rx="11" ry="8" fill="rgba(255,110,100,0.38)" />
-
-      {/* Mouth — varies by expression */}
-      {expression === 'happy' && (
-        <path d="M50 89 Q60 99 70 89" fill="none" stroke="#1A0900" strokeWidth="2.5" strokeLinecap="round" />
-      )}
-      {expression === 'big-smile' && (
-        <path d="M46 89 Q60 103 74 89" fill="#FF8A80" stroke="#1A0900" strokeWidth="2" strokeLinejoin="round" />
-      )}
-      {expression === 'o-mouth' && (
-        <ellipse cx="60" cy="93" rx="9" ry="11" fill="#FF8A80" stroke="#1A0900" strokeWidth="2" />
-      )}
-      {expression === 'smug' && (
-        <path d="M50 91 Q60 95 72 88" fill="none" stroke="#1A0900" strokeWidth="2.5" strokeLinecap="round" />
-      )}
-      {expression === 'sad' && (
-        <>
-          <path d="M50 94 Q60 87 70 94" fill="none" stroke="#1A0900" strokeWidth="2.5" strokeLinecap="round" />
-          {/* Tears */}
-          <ellipse cx="36" cy="77" rx="4.5" ry="8" fill="#90CAF9" opacity="0.88" />
-          <ellipse cx="84" cy="77" rx="4.5" ry="8" fill="#90CAF9" opacity="0.88" />
-        </>
-      )}
-      {(expression === 'laser' || expression === 'dollar' || expression === 'stars') && (
-        <path d="M50 89 Q60 99 70 89" fill="none" stroke="#1A0900" strokeWidth="2.5" strokeLinecap="round" />
-      )}
-    </g>
+    <>
+      {/* Eye whites */}
+      <ellipse cx="42" cy="66" rx="11" ry="12" fill="#1A0800" {...OUTLINE} />
+      <ellipse cx="78" cy="66" rx="11" ry="12" fill="#1A0800" {...OUTLINE} />
+      {/* Shine */}
+      <circle cx="45" cy="61" r="4" fill="white" />
+      <circle cx="81" cy="61" r="4" fill="white" />
+      <circle cx="46" cy="62.5" r="1.5" fill="white" opacity="0.6" />
+    </>
   );
 }
 
-// ── Sticker wrapper — float animation + white drop-shadow outline ──────────────
-function StickerWrap({
+function StarEyes() {
+  return (
+    <>
+      <ellipse cx="42" cy="66" rx="11" ry="12" fill="#1A0800" {...OUTLINE} />
+      <ellipse cx="78" cy="66" rx="11" ry="12" fill="#1A0800" {...OUTLINE} />
+      <text x="42" y="71" textAnchor="middle" fill="#FFD700" fontSize="13" fontFamily="Arial">★</text>
+      <text x="78" y="71" textAnchor="middle" fill="#FFD700" fontSize="13" fontFamily="Arial">★</text>
+    </>
+  );
+}
+
+function DollarEyes() {
+  return (
+    <>
+      <ellipse cx="42" cy="66" rx="11" ry="12" fill="#1A0800" {...OUTLINE} />
+      <ellipse cx="78" cy="66" rx="11" ry="12" fill="#1A0800" {...OUTLINE} />
+      <text x="42" y="72" textAnchor="middle" fill="#FFD700" fontSize="13" fontWeight="bold" fontFamily="Arial, sans-serif">$</text>
+      <text x="78" y="72" textAnchor="middle" fill="#FFD700" fontSize="13" fontWeight="bold" fontFamily="Arial, sans-serif">$</text>
+    </>
+  );
+}
+
+function LaserEyes() {
+  return (
+    <>
+      <ellipse cx="42" cy="66" rx="11" ry="12" fill="#CC0000" {...OUTLINE} />
+      <ellipse cx="78" cy="66" rx="11" ry="12" fill="#CC0000" {...OUTLINE} />
+      <ellipse cx="42" cy="62" r="4" fill="#FF6600" />
+      <ellipse cx="78" cy="62" r="4" fill="#FF6600" />
+    </>
+  );
+}
+
+function SunglassEyes() {
+  return (
+    <>
+      {/* Glasses frames */}
+      <rect x="28" y="58" width="26" height="18" rx="6" fill="#00DFFF" stroke="#0a0a0a" strokeWidth="2" />
+      <rect x="66" y="58" width="26" height="18" rx="6" fill="#00DFFF" stroke="#0a0a0a" strokeWidth="2" />
+      {/* Bridge */}
+      <path d="M54,67 L66,67" stroke="#0a0a0a" strokeWidth="3" strokeLinecap="round" />
+      {/* Arms */}
+      <path d="M28,67 L18,64" stroke="#0a0a0a" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M92,67 L102,64" stroke="#0a0a0a" strokeWidth="2.5" strokeLinecap="round" />
+    </>
+  );
+}
+
+// ─── Expression: Mouths ───────────────────────────────────────────────────────
+function HappyMouth() {
+  return <path d="M48,96 Q60,108 72,96" fill="none" stroke="#1A0800" strokeWidth="3" strokeLinecap="round" />;
+}
+function BigSmileMouth() {
+  return <path d="M44,96 Q60,112 76,96" fill="#FF8A80" stroke="#1A0800" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />;
+}
+function OMouth() {
+  return <ellipse cx="60" cy="100" rx="10" ry="11" fill="#FF8A80" stroke="#1A0800" strokeWidth="2.5" />;
+}
+function SmugMouth() {
+  return <path d="M49,97 Q60,102 73,95" fill="none" stroke="#1A0800" strokeWidth="3" strokeLinecap="round" />;
+}
+function SadMouth() {
+  return (
+    <>
+      <path d="M49,102 Q60,94 71,102" fill="none" stroke="#1A0800" strokeWidth="3" strokeLinecap="round" />
+      {/* Tears */}
+      <ellipse cx="33" cy="80" rx="5" ry="9" fill="#90CAF9" opacity="0.9" />
+      <ellipse cx="87" cy="80" rx="5" ry="9" fill="#90CAF9" opacity="0.9" />
+    </>
+  );
+}
+
+// ─── Base Shiba face ──────────────────────────────────────────────────────────
+function ShibaBase({
+  eyes,
+  mouth,
+  cheekColor = 'rgba(255,110,100,0.4)',
+}: {
+  eyes: React.ReactNode;
+  mouth: React.ReactNode;
+  cheekColor?: string;
+}) {
+  return (
+    <>
+      {/* Ears — back layer first */}
+      <path d={EAR_L} fill="#D07818" {...OUTLINE} />
+      <path d={EAR_R} fill="#D07818" {...OUTLINE} />
+      {/* Pink inner ear */}
+      <path d={EAR_L_INNER} fill="#FFB8B8" />
+      <path d={EAR_R_INNER} fill="#FFB8B8" />
+      {/* Head */}
+      <path d={HEAD} fill="#F5A035" {...OUTLINE} />
+      {/* Forehead lighter patch */}
+      <ellipse cx="60" cy="48" rx="24" ry="17" fill="#F8B84A" />
+      {/* Muzzle */}
+      <ellipse cx="60" cy="93" rx="27" ry="21" fill="#FFF0D0" {...THIN_OUTLINE} />
+      {/* Nose */}
+      <ellipse cx="60" cy="86" rx="6" ry="4.5" fill="#1A0800" />
+      {/* Cheeks */}
+      <ellipse cx="26" cy="83" rx="12" ry="9" fill={cheekColor} />
+      <ellipse cx="94" cy="83" rx="12" ry="9" fill={cheekColor} />
+      {/* Eyes */}
+      {eyes}
+      {/* Mouth */}
+      {mouth}
+    </>
+  );
+}
+
+// ─── Sticker wrapper ───────────────────────────────────────────────────────────
+function SW({
+  size = 140,
   delay = 0,
   anim,
   children,
 }: {
+  size?: number;
   delay?: number;
   anim?: TargetAndTransition;
   children: React.ReactNode;
@@ -117,316 +181,300 @@ function StickerWrap({
       style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', flexShrink: 0 }}
       animate={anim ?? { y: [0, -10, 0] }}
       transition={{ duration: 3.5 + delay * 0.3, repeat: Infinity, ease: 'easeInOut', delay }}
-      whileHover={{ scale: 1.18, rotate: 6, transition: { duration: 0.18 } }}
+      whileHover={{ scale: 1.18, rotate: 5, transition: { duration: 0.18 } }}
       whileTap={{ scale: 0.9 }}
     >
-      <div style={{ filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.95)) drop-shadow(0 0 9px rgba(255,255,255,0.7)) drop-shadow(0 10px 24px rgba(0,0,0,0.75))' }}>
-        {children}
+      {/* drop-shadow gives the 3-D depth; the white stroke IS the outline */}
+      <div style={{ filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.8)) drop-shadow(0 0 2px rgba(255,255,255,0.3))' }}>
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 120 130"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ display: 'block' }}
+        >
+          {children}
+        </svg>
       </div>
     </motion.div>
   );
 }
 
-// ViewBox for all stickers: 0 0 120 125
-// (includes room for accessories above/below the head)
+// ─────────────────────────────────────────────────────────────────────────────
+// STICKER EXPORTS
+// ─────────────────────────────────────────────────────────────────────────────
 
-// ── 1. NAKA GO UP! — happy with rocket ───────────────────────────────────────
+// 1. NAKA GO UP! — happy + rocket
 export function NakaGoIPSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={0}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="big-smile" />
-        {/* Rocket top-right */}
-        <g transform="translate(82,0) rotate(35)">
-          <rect x="4" y="2" width="12" height="24" rx="6" fill="#FF4D00" />
-          <polygon points="10,0 4,8 16,8" fill="#FF6B00" />
-          <polygon points="10,26 4,20 4,30" fill="#FFD700" />
-          <polygon points="10,26 16,20 16,30" fill="#FFD700" />
-          <circle cx="10" cy="13" r="4" fill="white" opacity="0.7" />
-        </g>
-        {/* Stars */}
-        <text x="5" y="22" fill="#FFD700" fontSize="10" fontFamily="Arial">★</text>
-        <text x="100" y="18" fill="#FF4D00" fontSize="8" fontFamily="Arial">✦</text>
-        {/* Bold label */}
-        <text x="60" y="120" textAnchor="middle" fill="#FF4D00" fontSize="13" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="2" stroke="white" strokeWidth="4" paintOrder="stroke">NAKA GO UP!</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={0}>
+      <ShibaBase eyes={<NormalEyes />} mouth={<BigSmileMouth />} />
+      {/* Rocket top-right */}
+      <g transform="translate(85,2) rotate(25)">
+        <rect x="3" y="2" width="12" height="26" rx="6" fill="#FF4D00" stroke="white" strokeWidth="3" paintOrder="stroke fill" />
+        <polygon points="9,0 3,7 15,7" fill="#FF6600" stroke="white" strokeWidth="2" paintOrder="stroke fill" />
+        <circle cx="9" cy="13" r="4" fill="white" opacity="0.65" />
+        <polygon points="9,28 2,20 2,34" fill="#FFD700" />
+        <polygon points="9,28 16,20 16,34" fill="#FFD700" />
+      </g>
+      {/* Stars */}
+      <text x="8" y="22" fill="#FFD700" fontSize="11">★</text>
+      {/* Label */}
+      <text x="60" y="127" textAnchor="middle" fill="#FF4D00" fontSize="12" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="1.5"
+        stroke="white" strokeWidth="4" paintOrder="stroke fill">NAKA GO UP!</text>
+    </SW>
   );
 }
 
-// ── 2. NAKA GO — standard happy ───────────────────────────────────────────────
+// 2. NAKA GO — standard happy
 export function NakaGoSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={0.3}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="happy" />
-        {/* Small star accents */}
-        <text x="8" y="25" fill="#FF4D00" fontSize="9" fontFamily="Arial">★</text>
-        <text x="104" y="30" fill="#FFD700" fontSize="8" fontFamily="Arial">★</text>
-        <text x="60" y="120" textAnchor="middle" fill="#FF4D00" fontSize="15" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="3" stroke="white" strokeWidth="4" paintOrder="stroke">NAKA GO</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={0.3}>
+      <ShibaBase eyes={<NormalEyes />} mouth={<HappyMouth />} />
+      <text x="8" y="22" fill="#FF4D00" fontSize="10">★</text>
+      <text x="104" y="28" fill="#FFD700" fontSize="9">★</text>
+      <text x="60" y="127" textAnchor="middle" fill="#FF4D00" fontSize="14" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="2"
+        stroke="white" strokeWidth="4" paintOrder="stroke fill">NAKA GO</text>
+    </SW>
   );
 }
 
-// ── 3. NAKA MOON — star eyes, crescent above ──────────────────────────────────
+// 3. NAKA MOON — star eyes + crescent
 export function MoonSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={0.5} anim={{ y: [0, -12, 0], rotate: [0, -3, 0] }}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="stars" />
-        {/* Crescent moon above */}
-        <path d="M50,10 A18,18 0 0,0 72,10 A12,12 0 0,1 50,10" fill="#FFD700" />
-        {/* Stars */}
-        <text x="6" y="18" fill="#FFD700" fontSize="8" fontFamily="Arial">★</text>
-        <text x="105" y="15" fill="#FFD700" fontSize="7" fontFamily="Arial">★</text>
-        <text x="14" y="38" fill="#FFD700" fontSize="6" fontFamily="Arial">✦</text>
-        <text x="100" y="42" fill="#FFD700" fontSize="6" fontFamily="Arial">✦</text>
-        <text x="60" y="120" textAnchor="middle" fill="#FFD700" fontSize="13" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="2" stroke="#1A0900" strokeWidth="4" paintOrder="stroke">NAKA MOON</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={0.5} anim={{ y: [0, -12, 0], rotate: [0, -3, 0] }}>
+      <ShibaBase eyes={<StarEyes />} mouth={<HappyMouth />} />
+      {/* Crescent moon */}
+      <path d="M46,12 A18,18 0 0,0 74,12 A14,14 0 0,1 46,12" fill="#FFD700" stroke="white" strokeWidth="3" paintOrder="stroke fill" />
+      {/* Stars */}
+      <text x="6" y="20" fill="#FFD700" fontSize="9">★</text>
+      <text x="105" y="16" fill="#FFD700" fontSize="8">★</text>
+      <text x="12" y="40" fill="#FFD700" fontSize="7">✦</text>
+      <text x="100" y="44" fill="#FFD700" fontSize="7">✦</text>
+      <text x="60" y="127" textAnchor="middle" fill="#FFD700" fontSize="12" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="2"
+        stroke="#1A0900" strokeWidth="4" paintOrder="stroke fill">NAKA MOON</text>
+    </SW>
   );
 }
 
-// ── 4. HODL — crown, smug expression ─────────────────────────────────────────
+// 4. HODL — crown + smug
 export function HodlSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={0.2}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="smug" />
-        {/* Crown */}
-        <polygon points="30,28 30,6 45,16 60,2 75,16 90,6 90,28" fill="#FFD700" stroke="#CC8800" strokeWidth="1.5" />
-        <circle cx="60" cy="4" r="5" fill="#FF4D00" />
-        <circle cx="30" cy="7" r="3.5" fill="#FF4D00" />
-        <circle cx="90" cy="7" r="3.5" fill="#FF4D00" />
-        {/* Crown gems */}
-        <circle cx="60" cy="20" r="3" fill="#00BFFF" />
-        <text x="60" y="120" textAnchor="middle" fill="#FFD700" fontSize="16" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="3" stroke="#1A0900" strokeWidth="4" paintOrder="stroke">HODL</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={0.2}>
+      <ShibaBase eyes={<NormalEyes />} mouth={<SmugMouth />} />
+      {/* Crown */}
+      <polygon points="28,34 28,10 44,22 60,4 76,22 92,10 92,34"
+        fill="#FFD700" stroke="white" strokeWidth="4" paintOrder="stroke fill" />
+      <circle cx="60" cy="5" r="5.5" fill="#FF4D00" stroke="white" strokeWidth="2.5" paintOrder="stroke fill" />
+      <circle cx="28" cy="11" r="4" fill="#FF4D00" stroke="white" strokeWidth="2" paintOrder="stroke fill" />
+      <circle cx="92" cy="11" r="4" fill="#FF4D00" stroke="white" strokeWidth="2" paintOrder="stroke fill" />
+      <circle cx="60" cy="22" r="3.5" fill="#00BFFF" />
+      <text x="60" y="127" textAnchor="middle" fill="#FFD700" fontSize="16" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="3"
+        stroke="#1A0900" strokeWidth="4" paintOrder="stroke fill">HODL</text>
+    </SW>
   );
 }
 
-// Pre-computed sun ray endpoints for GmFrensSticker (avoids Math calls in render)
-// angles: 0, 40, 80, 120, 160, 200, 240, 280, 320 degrees
-// x2 = 60 + cos(angle) * 16, y2 = 10 + sin(angle) * 16
-const SUN_RAYS = [
-  { x2: 76.0,  y2: 10.0  },
-  { x2: 72.3,  y2: 20.3  },
-  { x2: 62.8,  y2: 25.8  },
-  { x2: 52.0,  y2: 23.9  },
-  { x2: 44.9,  y2: 15.5  },
-  { x2: 44.1,  y2: 4.5   },
-  { x2: 49.7,  y2: -5.3  },
-  { x2: 60.9,  y2: -5.9  },
-  { x2: 70.6,  y2: 0.9   },
-];
-
-// ── 5. GM FRENS — happy with sun rays ────────────────────────────────────────
+// 5. GM FRENS — big smile + sun
 export function GmFrensSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={0.7} anim={{ y: [0, -8, 0], scale: [1, 1.04, 1] }}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="big-smile" />
-        {/* Sun rays around top */}
-        {SUN_RAYS.map((ray, i) => (
-          <line key={i} x1="60" y1="10" x2={ray.x2} y2={ray.y2} stroke="#FFD700" strokeWidth="2.5" strokeLinecap="round" opacity="0.85" />
-        ))}
-        <circle cx="60" cy="10" r="7" fill="#FFD700" />
-        <text x="60" y="120" textAnchor="middle" fill="#FF8C00" fontSize="12" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="2" stroke="white" strokeWidth="4" paintOrder="stroke">GM FRENS</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={0.7} anim={{ y: [0, -8, 0], scale: [1, 1.04, 1] }}>
+      <ShibaBase eyes={<NormalEyes />} mouth={<BigSmileMouth />} />
+      {/* Sun rays (pre-computed, no Math in render) */}
+      {SUN_RAYS.map((r, i) => (
+        <line key={i} x1="60" y1="14" x2={r.x2} y2={r.y2} stroke="#FFD700" strokeWidth="3" strokeLinecap="round" opacity="0.85" />
+      ))}
+      <circle cx="60" cy="14" r="8" fill="#FFD700" stroke="white" strokeWidth="3" paintOrder="stroke fill" />
+      <text x="60" y="127" textAnchor="middle" fill="#FF8C00" fontSize="12" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="2"
+        stroke="white" strokeWidth="4" paintOrder="stroke fill">GM FRENS</text>
+    </SW>
   );
 }
 
-// ── 6. WAGMI — rainbow, fist pump ────────────────────────────────────────────
+// 6. WAGMI — rainbow arcs
 export function WagmiSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={0.4} anim={{ y: [0, -14, 0] }}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="big-smile" />
-        {/* Rainbow arc */}
-        <path d="M10,55 Q10,20 60,20 Q110,20 110,55" fill="none" stroke="#FF4D00" strokeWidth="4" opacity="0.9" />
-        <path d="M14,57 Q14,24 60,24 Q106,24 106,57" fill="none" stroke="#FFD700" strokeWidth="4" opacity="0.9" />
-        <path d="M18,59 Q18,28 60,28 Q102,28 102,59" fill="none" stroke="#00CC66" strokeWidth="4" opacity="0.9" />
-        <path d="M22,61 Q22,32 60,32 Q98,32 98,61" fill="none" stroke="#00BFFF" strokeWidth="4" opacity="0.9" />
-        <text x="60" y="120" textAnchor="middle" fill="#CC44FF" fontSize="15" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="3" stroke="white" strokeWidth="4" paintOrder="stroke">WAGMI</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={0.4} anim={{ y: [0, -14, 0] }}>
+      <ShibaBase eyes={<NormalEyes />} mouth={<BigSmileMouth />} />
+      {/* Rainbow arcs */}
+      <path d="M8,60 Q8,22 60,22 Q112,22 112,60" fill="none" stroke="#FF4D00" strokeWidth="5" />
+      <path d="M13,62 Q13,28 60,28 Q107,28 107,62" fill="none" stroke="#FFD700" strokeWidth="5" />
+      <path d="M18,64 Q18,34 60,34 Q102,34 102,64" fill="none" stroke="#00CC66" strokeWidth="5" />
+      <path d="M23,66 Q23,40 60,40 Q97,40 97,66" fill="none" stroke="#00BFFF" strokeWidth="5" />
+      <text x="60" y="127" textAnchor="middle" fill="#CC44FF" fontSize="15" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="3"
+        stroke="white" strokeWidth="4" paintOrder="stroke fill">WAGMI</text>
+    </SW>
   );
 }
 
-// ── 7. DIAMOND HANDS — dollar eyes, diamond icon ─────────────────────────────
+// 7. DIAMOND HANDS — dollar eyes + diamonds
 export function DiamondHandsSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={0.9}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="dollar" />
-        {/* Diamond top-left */}
-        <polygon points="12,20 20,10 28,20 20,35" fill="#00BFFF" stroke="#0080CC" strokeWidth="1.5" />
-        <polygon points="12,20 20,10 20,35" fill="#80DFFF" opacity="0.7" />
-        {/* Diamond top-right */}
-        <polygon points="92,20 100,10 108,20 100,35" fill="#00BFFF" stroke="#0080CC" strokeWidth="1.5" />
-        <polygon points="92,20 100,10 100,35" fill="#80DFFF" opacity="0.7" />
-        <text x="60" y="120" textAnchor="middle" fill="#00BFFF" fontSize="11" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="1.5" stroke="#0a0a0a" strokeWidth="4" paintOrder="stroke">DIAMOND HANDS</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={0.9}>
+      <ShibaBase eyes={<DollarEyes />} mouth={<HappyMouth />} />
+      {/* Diamonds */}
+      <polygon points="14,22 22,10 30,22 22,38"
+        fill="#00BFFF" stroke="white" strokeWidth="3" paintOrder="stroke fill" />
+      <polygon points="14,22 22,10 22,38" fill="#80DFFF" opacity="0.7" />
+      <polygon points="90,22 98,10 106,22 98,38"
+        fill="#00BFFF" stroke="white" strokeWidth="3" paintOrder="stroke fill" />
+      <polygon points="90,22 98,10 98,38" fill="#80DFFF" opacity="0.7" />
+      <text x="60" y="127" textAnchor="middle" fill="#00BFFF" fontSize="10" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="1.5"
+        stroke="#0a0a0a" strokeWidth="4" paintOrder="stroke fill">DIAMOND HANDS</text>
+    </SW>
   );
 }
 
-// ── 8. TO THE MOON — rocket ride ─────────────────────────────────────────────
+// 8. TO THE MOON — rocket ride, open mouth
 export function RocketSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={1.1} anim={{ y: [0, -16, 0], rotate: [0, 3, 0] }}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="o-mouth" />
-        {/* Rocket going up-right */}
-        <g transform="translate(80,-2) rotate(30)">
-          <rect x="3" y="2" width="14" height="28" rx="7" fill="#FF4D00" />
-          <polygon points="10,0 3,8 17,8" fill="#FF6B00" />
-          <circle cx="10" cy="14" r="5" fill="white" opacity="0.65" />
-          <polygon points="10,30 2,22 2,36" fill="#FFD700" />
-          <polygon points="10,30 18,22 18,36" fill="#FFD700" />
-        </g>
-        {/* Speed lines */}
-        <line x1="60" y1="8" x2="72" y2="2" stroke="#FF4D00" strokeWidth="2.5" strokeLinecap="round" opacity="0.7" />
-        <line x1="64" y1="15" x2="80" y2="10" stroke="#FFD700" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
-        <text x="60" y="120" textAnchor="middle" fill="#FF6B00" fontSize="12" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="2" stroke="white" strokeWidth="4" paintOrder="stroke">TO THE MOON</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={1.1} anim={{ y: [0, -16, 0], rotate: [0, 4, 0] }}>
+      <ShibaBase eyes={<NormalEyes />} mouth={<OMouth />} />
+      {/* Rocket */}
+      <g transform="translate(82,-2) rotate(30)">
+        <rect x="2" y="2" width="14" height="28" rx="7" fill="#FF4D00" stroke="white" strokeWidth="3.5" paintOrder="stroke fill" />
+        <polygon points="9,0 2,8 16,8" fill="#FF6600" stroke="white" strokeWidth="2.5" paintOrder="stroke fill" />
+        <circle cx="9" cy="14" r="5" fill="white" opacity="0.65" />
+        <polygon points="9,30 1,22 1,37" fill="#FFD700" />
+        <polygon points="9,30 17,22 17,37" fill="#FFD700" />
+      </g>
+      {/* Speed lines */}
+      <line x1="56" y1="8" x2="74" y2="2" stroke="#FF4D00" strokeWidth="2.5" strokeLinecap="round" opacity="0.7" />
+      <line x1="62" y1="16" x2="82" y2="10" stroke="#FFD700" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+      <text x="60" y="127" textAnchor="middle" fill="#FF6B00" fontSize="12" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="2"
+        stroke="white" strokeWidth="4" paintOrder="stroke fill">TO THE MOON</text>
+    </SW>
   );
 }
 
-// ── 9. THE CULT — mysterious hood, laser eyes ────────────────────────────────
+// 9. THE CULT — laser eyes + beams
 export function CultSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={0.6} anim={{ y: [0, -8, 0] }}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="laser" />
-        {/* Laser beams from eyes */}
-        <line x1="33" y1="67" x2="0" y2="75" stroke="#FF0000" strokeWidth="3" strokeLinecap="round" opacity="0.85" />
-        <line x1="87" y1="67" x2="120" y2="75" stroke="#FF0000" strokeWidth="3" strokeLinecap="round" opacity="0.85" />
-        {/* Glow at laser tips */}
-        <circle cx="0" cy="75" r="4" fill="#FF0000" opacity="0.6" />
-        <circle cx="120" cy="75" r="4" fill="#FF0000" opacity="0.6" />
-        {/* Cult symbol */}
-        <circle cx="60" cy="12" r="9" fill="none" stroke="#9B30FF" strokeWidth="2.5" />
-        <polygon points="60,4 63,9 68,9 64,13 66,18 60,15 54,18 56,13 52,9 57,9" fill="#9B30FF" opacity="0.85" />
-        <text x="60" y="120" textAnchor="middle" fill="#9B30FF" fontSize="13" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="2.5" stroke="#0a0a0a" strokeWidth="4" paintOrder="stroke">THE CULT</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={0.6}>
+      <ShibaBase eyes={<LaserEyes />} mouth={<SmugMouth />} />
+      {/* Laser beams */}
+      <line x1="31" y1="66" x2="0"   y2="74" stroke="#FF0000" strokeWidth="4" strokeLinecap="round" opacity="0.9" />
+      <line x1="89" y1="66" x2="120" y2="74" stroke="#FF0000" strokeWidth="4" strokeLinecap="round" opacity="0.9" />
+      <circle cx="0"   cy="74" r="5" fill="#FF0000" opacity="0.6" />
+      <circle cx="120" cy="74" r="5" fill="#FF0000" opacity="0.6" />
+      {/* Cult symbol */}
+      <circle cx="60" cy="13" r="10" fill="none" stroke="#9B30FF" strokeWidth="3" />
+      <polygon points="60,5 63,10 68,10 64,14 66,19 60,16 54,19 56,14 52,10 57,10" fill="#9B30FF" opacity="0.9" />
+      <text x="60" y="127" textAnchor="middle" fill="#9B30FF" fontSize="13" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="2.5"
+        stroke="#0a0a0a" strokeWidth="4" paintOrder="stroke fill">THE CULT</text>
+    </SW>
   );
 }
 
-// ── 10. BORN 1948 — kanji stamp + happy ──────────────────────────────────────
+// 10. BORN 1948 — smug + red stamp
 export function KimonoSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={0.8}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="smug" />
-        {/* Red stamp/seal */}
-        <rect x="78" y="4" width="36" height="28" rx="4" fill="#CC0000" opacity="0.9" transform="rotate(-8,96,18)" />
-        <text x="96" y="23" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold" fontFamily="serif" transform="rotate(-8,96,18)">中</text>
-        <text x="60" y="120" textAnchor="middle" fill="#FF4D00" fontSize="13" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="2" stroke="white" strokeWidth="4" paintOrder="stroke">BORN 1948</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={0.8}>
+      <ShibaBase eyes={<NormalEyes />} mouth={<SmugMouth />} />
+      {/* Red kanji stamp */}
+      <rect x="76" y="4" width="38" height="30" rx="5" fill="#CC0000" opacity="0.9"
+        stroke="white" strokeWidth="3" paintOrder="stroke fill"
+        transform="rotate(-8,95,19)" />
+      <text x="95" y="24" textAnchor="middle" fill="white" fontSize="18" fontWeight="bold"
+        fontFamily="serif" transform="rotate(-8,95,19)">中</text>
+      <text x="60" y="127" textAnchor="middle" fill="#FF4D00" fontSize="13" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="2"
+        stroke="white" strokeWidth="4" paintOrder="stroke fill">BORN 1948</text>
+    </SW>
   );
 }
 
-// ── 11. 中号 — large kanji watermark, happy ───────────────────────────────────
+// 11. 中号 — big kanji watermark
 export function KanjiSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={1.2} anim={{ y: [0, -10, 0], rotate: [0, -4, 0] }}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Bg kanji watermark */}
-        <text x="60" y="88" textAnchor="middle" fill="#FFD700" fontSize="82" fontFamily="serif" opacity="0.12">中</text>
-        <ShibaFace expression="happy" />
-        <text x="60" y="120" textAnchor="middle" fill="#FFD700" fontSize="16" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="3" stroke="#1A0900" strokeWidth="4" paintOrder="stroke">中号</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={1.2} anim={{ y: [0, -10, 0], rotate: [0, -4, 0] }}>
+      {/* Kanji watermark behind everything */}
+      <text x="60" y="102" textAnchor="middle" fill="#FFD700" fontSize="88"
+        fontFamily="serif" opacity="0.10">中</text>
+      <ShibaBase eyes={<NormalEyes />} mouth={<HappyMouth />} />
+      <text x="60" y="127" textAnchor="middle" fill="#FFD700" fontSize="17" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="3"
+        stroke="#1A0900" strokeWidth="4" paintOrder="stroke fill">中号</text>
+    </SW>
   );
 }
 
-// ── 12. BASED — sunglasses, smug ─────────────────────────────────────────────
+// 12. BASED — sunglasses + smug
 export function BasedSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={1.4} anim={{ y: [0, -8, 0] }}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="smug" />
-        {/* Cool sunglasses */}
-        <rect x="28" y="58" width="26" height="18" rx="5" fill="#00FFFF" opacity="0.85" />
-        <rect x="66" y="58" width="26" height="18" rx="5" fill="#00FFFF" opacity="0.85" />
-        {/* Bridge */}
-        <line x1="54" y1="67" x2="66" y2="67" stroke="#0a0a0a" strokeWidth="2.5" />
-        {/* Frame outline */}
-        <rect x="28" y="58" width="26" height="18" rx="5" fill="none" stroke="#0a0a0a" strokeWidth="1.5" />
-        <rect x="66" y="58" width="26" height="18" rx="5" fill="none" stroke="#0a0a0a" strokeWidth="1.5" />
-        {/* Side arms */}
-        <line x1="28" y1="66" x2="18" y2="63" stroke="#0a0a0a" strokeWidth="2" strokeLinecap="round" />
-        <line x1="92" y1="66" x2="102" y2="63" stroke="#0a0a0a" strokeWidth="2" strokeLinecap="round" />
-        <text x="60" y="120" textAnchor="middle" fill="#00FFFF" fontSize="16" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="3" stroke="#0a0a0a" strokeWidth="4" paintOrder="stroke">BASED</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={1.4}>
+      <ShibaBase eyes={<SunglassEyes />} mouth={<SmugMouth />} />
+      <text x="60" y="127" textAnchor="middle" fill="#00FFFF" fontSize="16" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="3"
+        stroke="#0a0a0a" strokeWidth="4" paintOrder="stroke fill">BASED</text>
+    </SW>
   );
 }
 
-// ── 13. ON FIRE — flames around head ──────────────────────────────────────────
+// 13. ON FIRE — flames around head
 export function FireSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={0.15} anim={{ y: [0, -10, 0], scale: [1, 1.04, 1] }}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="big-smile" />
-        {/* Flame left */}
-        <path d="M15,65 Q8,48 14,35 Q18,48 22,38 Q26,50 20,65Z" fill="#FF4D00" opacity="0.9" />
-        <path d="M16,65 Q11,52 16,42 Q19,52 21,65Z" fill="#FFD700" opacity="0.8" />
-        {/* Flame right */}
-        <path d="M105,65 Q112,48 106,35 Q102,48 98,38 Q94,50 100,65Z" fill="#FF4D00" opacity="0.9" />
-        <path d="M104,65 Q109,52 104,42 Q101,52 99,65Z" fill="#FFD700" opacity="0.8" />
-        {/* Flame top */}
-        <path d="M45,25 Q38,10 48,0 Q52,12 58,5 Q55,18 65,8 Q62,20 72,12 Q70,25 60,25Z" fill="#FF4D00" opacity="0.85" />
-        <path d="M50,24 Q45,12 52,4 Q55,14 60,24Z" fill="#FFD700" opacity="0.8" />
-        <text x="60" y="120" textAnchor="middle" fill="#FF2200" fontSize="14" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="2.5" stroke="white" strokeWidth="4" paintOrder="stroke">ON FIRE</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={0.15} anim={{ y: [0, -10, 0], scale: [1, 1.04, 1] }}>
+      <ShibaBase eyes={<NormalEyes />} mouth={<BigSmileMouth />} />
+      {/* Flames — drawn OVER the head */}
+      <path d="M14,65 Q6,44 12,28 Q16,44 22,32 Q28,46 20,65Z" fill="#FF4D00" opacity="0.9" />
+      <path d="M15,65 Q9,48 14,36 Q17,48 20,65Z" fill="#FFD700" opacity="0.85" />
+      <path d="M106,65 Q114,44 108,28 Q104,44 98,32 Q92,46 100,65Z" fill="#FF4D00" opacity="0.9" />
+      <path d="M105,65 Q111,48 106,36 Q103,48 100,65Z" fill="#FFD700" opacity="0.85" />
+      <path d="M40,18 Q32,4 44,0 Q48,12 56,6 Q52,20 64,10 Q60,24 72,14 Q68,28 56,20Z" fill="#FF4D00" opacity="0.88" />
+      <path d="M46,17 Q40,6 48,2 Q51,12 56,18Z" fill="#FFD700" opacity="0.85" />
+      <text x="60" y="127" textAnchor="middle" fill="#FF2200" fontSize="14" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="2.5"
+        stroke="white" strokeWidth="4" paintOrder="stroke fill">ON FIRE</text>
+    </SW>
   );
 }
 
-// ── 14. COOKIES & CREAM — happy + cookie ──────────────────────────────────────
+// 14. COOKIES & CREAM — big smile + cookie
 export function CookieSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={1.0}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="big-smile" />
-        {/* Cookie top-left */}
-        <circle cx="18" cy="18" r="13" fill="#C8860A" />
-        <circle cx="18" cy="18" r="11" fill="#D4952C" />
-        {/* Choc chips */}
-        <circle cx="14" cy="14" r="2.5" fill="#5C2D0A" />
-        <circle cx="22" cy="12" r="2" fill="#5C2D0A" />
-        <circle cx="12" cy="22" r="2" fill="#5C2D0A" />
-        <circle cx="22" cy="22" r="2.5" fill="#5C2D0A" />
-        <circle cx="18" cy="18" r="1.5" fill="#5C2D0A" />
-        {/* Cookie bite mark */}
-        <path d="M28,10 Q34,4 34,18 Q28,14 28,10Z" fill="#070707" />
-        <text x="60" y="120" textAnchor="middle" fill="#CC8800" fontSize="10" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="1.5" stroke="white" strokeWidth="3.5" paintOrder="stroke">COOKIES &amp; CREAM</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={1.0}>
+      <ShibaBase eyes={<NormalEyes />} mouth={<BigSmileMouth />} />
+      {/* Cookie top-left */}
+      <circle cx="20" cy="20" r="14" fill="#C8860A" stroke="white" strokeWidth="3.5" paintOrder="stroke fill" />
+      <circle cx="20" cy="20" r="11.5" fill="#D49530" />
+      <circle cx="16" cy="15" r="3" fill="#5C2D0A" />
+      <circle cx="24" cy="13" r="2.5" fill="#5C2D0A" />
+      <circle cx="13" cy="23" r="2.5" fill="#5C2D0A" />
+      <circle cx="24" cy="24" r="3" fill="#5C2D0A" />
+      <circle cx="20" cy="19" r="2" fill="#5C2D0A" />
+      {/* Bite mark */}
+      <path d="M30,12 Q36,6 36,20 Q30,16 30,12Z" fill="#070707" />
+      <text x="60" y="127" textAnchor="middle" fill="#CC8800" fontSize="10" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="1.5"
+        stroke="white" strokeWidth="3.5" paintOrder="stroke fill">COOKIES &amp; CREAM</text>
+    </SW>
   );
 }
 
-// ── 15. NGMI — sad tears ─────────────────────────────────────────────────────
+// 15. NGMI — sad + tears
 export function NgmiSticker({ size = 150 }: { size?: number }) {
   return (
-    <StickerWrap delay={1.6} anim={{ y: [0, -6, 0] }}>
-      <svg width={size} height={size} viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ShibaFace expression="sad" />
-        {/* Rain drops */}
-        <ellipse cx="30" cy="105" rx="2" ry="4" fill="#90CAF9" opacity="0.7" />
-        <ellipse cx="50" cy="110" rx="2" ry="4" fill="#90CAF9" opacity="0.6" />
-        <ellipse cx="70" cy="107" rx="2" ry="4" fill="#90CAF9" opacity="0.7" />
-        <ellipse cx="90" cy="112" rx="2" ry="4" fill="#90CAF9" opacity="0.6" />
-        <text x="60" y="122" textAnchor="middle" fill="#90CAF9" fontSize="16" fontWeight="900" fontFamily="'Bebas Neue', Impact, sans-serif" letterSpacing="3" stroke="#0a0a0a" strokeWidth="4" paintOrder="stroke">NGMI</text>
-      </svg>
-    </StickerWrap>
+    <SW size={size} delay={1.6} anim={{ y: [0, -6, 0] }}>
+      <ShibaBase eyes={<NormalEyes />} mouth={<SadMouth />} />
+      {/* Rain drops below */}
+      <ellipse cx="32" cy="120" rx="2.5" ry="5" fill="#90CAF9" opacity="0.75" />
+      <ellipse cx="52" cy="125" rx="2.5" ry="5" fill="#90CAF9" opacity="0.65" />
+      <ellipse cx="68" cy="122" rx="2.5" ry="5" fill="#90CAF9" opacity="0.75" />
+      <ellipse cx="88" cy="126" rx="2.5" ry="5" fill="#90CAF9" opacity="0.65" />
+      <text x="60" y="127" textAnchor="middle" fill="#90CAF9" fontSize="16" fontWeight="900"
+        fontFamily="'Bebas Neue',Impact,sans-serif" letterSpacing="3"
+        stroke="#0a0a0a" strokeWidth="4" paintOrder="stroke fill">NGMI</text>
+    </SW>
   );
 }
