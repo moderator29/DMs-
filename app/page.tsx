@@ -7,7 +7,6 @@ import Tokenomics from '@/components/home/Tokenomics';
 import Community from '@/components/home/Community';
 import HomeChart from '@/components/home/HomeChart';
 import HomeDdergo from '@/components/home/HomeDdergo';
-import HomeStickerStrip from '@/components/home/HomeStickerStrip';
 import HomeCTABar from '@/components/home/HomeCTABar';
 
 export default function HomePage() {
@@ -16,7 +15,6 @@ export default function HomePage() {
       <Header />
       <Hero />
       <HomeCTABar />
-      <HomeStickerStrip />
       <StatsBlock />
       <Timeline />
       <HomeChart />
