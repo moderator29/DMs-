@@ -3,6 +3,7 @@ import './globals.css';
 import { Providers } from './providers';
 import IntroScreen from '@/components/shared/IntroScreen';
 import LiveTicker from '@/components/shared/LiveTicker';
+import AuroraBackground from '@/components/shared/AuroraBackground';
 
 export const metadata: Metadata = {
   title: 'NAKA GO 中号 | The Shiba Who Saved His Breed',
@@ -31,6 +32,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-[#0a0a0a] text-white antialiased overflow-x-hidden">
+        <AuroraBackground />
         <Providers>
           <IntroScreen />
           <LiveTicker />
