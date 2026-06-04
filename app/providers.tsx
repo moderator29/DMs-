@@ -5,6 +5,7 @@ import { RainbowKitProvider, getDefaultConfig, darkTheme } from '@rainbow-me/rai
 import { WagmiProvider } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { ThirdwebProvider } from 'thirdweb/react';
 
 const config = getDefaultConfig({
   appName: 'Naka Go',
@@ -26,7 +27,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             borderRadius: 'large',
           })}
         >
-          {children}
+          <ThirdwebProvider>{children}</ThirdwebProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

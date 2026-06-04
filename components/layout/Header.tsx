@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Image as ImageIcon, Cookie, Sword, Ticket, Music, User, BookOpen, Wallet, Vault } from 'lucide-react';
+import { Menu, X, Image as ImageIcon, Cookie, Sword, Ticket, Music, User, BookOpen, Wallet, Vault, Gem } from 'lucide-react';
 import { SOCIAL_LINKS } from '@/lib/utils/constants';
 import { useAccount, useDisconnect } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
@@ -30,6 +30,7 @@ const navLinks = [
 ];
 
 const appLinks = [
+  { label: 'Claim',     href: '/claim',     icon: Gem },
   { label: 'Gallery',   href: '/gallery',   icon: ImageIcon },
   { label: 'Cookies',   href: '/cookies',   icon: Cookie },
   { label: 'M4nga',     href: '/m4nga',     icon: Sword },
