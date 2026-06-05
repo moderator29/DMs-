@@ -24,7 +24,7 @@ export default function HomeDdergo() {
   const [playing] = useState(false);
 
   return (
-    <section className="py-20 bg-[#0a0a0a] relative overflow-hidden">
+    <section className="py-20 relative overflow-hidden">
       {/* Background */}
       <div
         className="absolute inset-0 pointer-events-none"

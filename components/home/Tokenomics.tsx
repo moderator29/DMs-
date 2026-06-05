@@ -51,7 +51,7 @@ export default function Tokenomics() {
   };
 
   return (
-    <section id="tokenomics" className="py-24 bg-[#0f0f1a]">
+    <section id="tokenomics" className="py-24">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <motion.div

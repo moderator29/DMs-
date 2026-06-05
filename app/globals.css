@@ -228,6 +228,16 @@ body {
 .claim-connect > div,
 .claim-connect button { width: 100%; }
 
+/* Site-wide aurora bleed-through. Full-page route shells become a translucent
+   veil over the fixed AuroraBackground so every route shares one living canvas.
+   Scoped to min-h-screen wrappers so panels, cards, inputs and overlays keep
+   their own solid backgrounds. */
+.min-h-screen.bg-\[\#0a0a0a\],
+.min-h-screen.bg-\[\#070707\],
+.min-h-screen.bg-\[\#080808\] {
+  background-color: rgba(8, 8, 8, 0.5) !important;
+}
+
 /* Accessibility: honor reduced-motion across the whole site */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

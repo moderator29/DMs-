@@ -10,7 +10,7 @@ import BuyModal from '@/components/shared/BuyModal';
 export default function Hero() {
   const [buyOpen, setBuyOpen] = useState(false);
   return (
-    <section className="relative min-h-screen bg-[#0a0a0a] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen bg-[#0a0a0a]/70 flex items-center justify-center overflow-hidden">
       {/* Particle Background */}
       <div className="absolute inset-0 z-0">
         <ParticleField density={150} color="#FF4D00" />

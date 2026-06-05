@@ -90,7 +90,7 @@ export default function HomeChart() {
   ];
 
   return (
-    <section id="chart" className="py-24 bg-[#0a0a0a] relative overflow-hidden">
+    <section id="chart" className="py-24 relative overflow-hidden">
       <BuyModal isOpen={buyOpen} onClose={() => setBuyOpen(false)} />
 
       {/* Background glow */}

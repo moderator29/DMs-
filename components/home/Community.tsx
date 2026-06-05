@@ -53,7 +53,7 @@ const socialLinks = [
 
 export default function Community() {
   return (
-    <section id="community" className="py-24 bg-[#0a0a0a]">
+    <section id="community" className="py-24">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <motion.div

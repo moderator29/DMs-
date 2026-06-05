@@ -11,7 +11,7 @@ import HomeCTABar from '@/components/home/HomeCTABar';
 
 export default function HomePage() {
   return (
-    <main className="bg-[#0a0a0a]">
+    <main>
       <Header />
       <Hero />
       <HomeCTABar />

@@ -108,7 +108,7 @@ export default function StatsBlock() {
   ];
 
   return (
-    <section className="py-20 bg-[#0a0a0a]">
+    <section className="py-20">
       <div className="container mx-auto px-4 max-w-5xl">
 
         {/* Label */}
